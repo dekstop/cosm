@@ -30,7 +30,7 @@ function get_feed_history() {
 	curl $url -s -S || return 1
 }
 
-dir="${DATADIR}/${STARTDATE}"
+dir="${DATADIR}/feed_history/${STARTDATE}"
 mkdir -p "${dir}" > /dev/null 2>&1
 
 for id in $ENV_IDS
