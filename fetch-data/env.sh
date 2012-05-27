@@ -3,7 +3,25 @@
 APIKEY=YOUR_API_KEY
 DATADIR=~/cosm/data
 
-PERL=perl5.10
+PERL=perl
+
+function add_days() {
+	date=$1
+	num_days=$2
+	# BSD
+	echo `date -j -f "%Y-%m-%d" -v +${num_days}d $date +"%Y-%m-%d"`
+	# GNU
+	#echo `date --date "${date} + $num_days day" +"%Y-%m-%d"`
+}
+
+function iso8601_to_epoch() {
+	date=$1
+	_time=$2
+	# BSD
+	echo `date -j -f "%Y-%m-%dT%H:%M:%S" "${date}T${_time}" +%s`
+	# GNU
+	#echo date --date "${date} ${_time}" +%s`
+}
 
 function xpath_query() {
 	xmlfile=$1
