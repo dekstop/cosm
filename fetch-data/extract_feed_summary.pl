@@ -43,6 +43,7 @@ if ($nodes->size) {
 	print STDERR "Found ", $nodes->size, " environments.\n";
 	foreach my $node ($nodes->get_nodelist) {
 		my $id = get_data_item($xpath, '@id', $node);
+		my $created_at = get_data_item($xpath, '@created', $node);
 		my $title = get_data_item($xpath, 'title/text()', $node);
 		my $feed = get_data_item($xpath, 'feed/text()', $node);
 		my $status = get_data_item($xpath, 'status/text()', $node);
@@ -62,11 +63,11 @@ if ($nodes->size) {
 			my $stream_last_sample_time = get_data_item($xpath, 'current_value/@at', $_);
 			my @stream_tags = get_data_list($xpath, 'tag/text()', $_);
 			
-			# ID	TITLE	FEED	STATUS	PRIVATE	LOCATION	LAT	LON	ENV_TAGS	STREAM_ID	STREAM_UNIT	STREAM_TIMESTAMP	STREAM_TAGS
+			# ID	CREATED_AT	TITLE	FEED	STATUS	PRIVATE	LOCATION	LAT	LON	ENV_TAGS	STREAM_ID	STREAM_UNIT	STREAM_TIMESTAMP	STREAM_TAGS
 
 			# First: env metadata, repeated once per stream
 			my $jtags = join(", ", sort(@env_tags));
-			print "${id}\t${title}\t${feed}\t${status}\t${private}\t${location_name}\t${location_lat}\t${location_lon}\t${jtags}\t";
+			print "${id}\t${created_at}\t${title}\t${feed}\t${status}\t${private}\t${location_name}\t${location_lat}\t${location_lon}\t${jtags}\t";
 			
 			# Followed up by stream data and metadata
 			$jtags = join(", ", sort(@stream_tags));
@@ -80,7 +81,6 @@ if ($nodes->size) {
 			$jtags = join(", ", @tags);
 			print "${jtags}\n";
 		}
-		# print "${title}\t${feed}\t${status}\t${private}\t${location_name}\t${location_lat}\t${location_lon}\n";
 	}
 }
 else {

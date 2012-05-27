@@ -64,9 +64,9 @@ mkdir -p "${outdir}" > /dev/null 2>&1
 # wc -l "$aqfeedfile"
 
 # summarise tags
-summarise_tags "$aqfeedfile" 1 9 > "${outdir}/aq_feed_tags.txt"
-summarise_tags "$aqfeedfile" 1,10 14 > "${outdir}/aq_datastream_tags.txt"
-summarise_tags "$aqfeedfile" 1,10 10 > "${outdir}/aq_datastream_ids.txt"
-summarise_tags "$aqfeedfile" 1,10 11 > "${outdir}/aq_datastream_units.txt"
+summarise_tags "$aqfeedfile" 1 10 > "${outdir}/aq_feed_tags.txt"
+summarise_tags "$aqfeedfile" 1,11 15 > "${outdir}/aq_datastream_tags.txt"
+summarise_tags "$aqfeedfile" 1,11 11 > "${outdir}/aq_datastream_ids.txt"
+summarise_tags "$aqfeedfile" 1,11 12 > "${outdir}/aq_datastream_units.txt"
 
 cleanup
