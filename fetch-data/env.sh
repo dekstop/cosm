@@ -9,18 +9,18 @@ function add_days() {
 	date=$1
 	num_days=$2
 	# BSD
-	echo `date -j -f "%Y-%m-%d" -v +${num_days}d $date +"%Y-%m-%d"`
+	echo `date -j -f "%Y-%m-%d" -v +${num_days}d $date +"%Y-%m-%d"` || return 1
 	# GNU
-	#echo `date --date "${date} + $num_days day" +"%Y-%m-%d"`
+	#echo `date --date "${date} + $num_days day" +"%Y-%m-%d"` || return 1
 }
 
 function iso8601_to_epoch() {
 	date=$1
 	_time=$2
 	# BSD
-	echo `date -j -f "%Y-%m-%dT%H:%M:%S" "${date}T${_time}" +%s`
+	echo `date -j -f "%Y-%m-%dT%H:%M:%S" "${date}T${_time}" +%s` || return 1
 	# GNU
-	#echo date --date "${date} ${_time}" +%s`
+	#echo `date --date "${date} ${_time}" +%s` || return 1
 }
 
 function xpath_query() {

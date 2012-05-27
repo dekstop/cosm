@@ -15,7 +15,7 @@ then
 fi
 
 STARTDATE=$1
-ENDDATE=`add_days $STARTDATE 1`
+ENDDATE=`add_days $STARTDATE 1` || exit 1
 STARTTIME=00:00:00
 
 if [ $# -ge 2 ]
