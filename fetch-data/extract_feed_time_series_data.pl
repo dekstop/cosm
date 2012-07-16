@@ -12,7 +12,7 @@ sub get_data_list {
 	foreach (@nodes) {
 		my $str = $_->getData();
 		$str =~ s/[\n\r\t]+/ /g;
-		if ($str) { # FIXME: this fails when the string evaluates to 'false' (e.g. "0")
+		if (!($str eq undef)) {
 			push(@values, $str);
 		}
 	}
