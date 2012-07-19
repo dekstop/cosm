@@ -8,10 +8,12 @@ CREATE TABLE schedule (
 
 CREATE TABLE environments (
     id          INTEGER NOT NULL,
-    created     TIMESTAMP WITHOUT TIME ZONE NOT NULL
+    created     TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated     TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
 
 CREATE TABLE requests (
+    id          SERIAL PRIMARY KEY,
     envid       INTEGER NOT NULL,
     scheduleid  INTEGER NOT NULL,
     lastrequest TIMESTAMP WITHOUT TIME ZONE,
