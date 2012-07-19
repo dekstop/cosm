@@ -47,13 +47,12 @@ if ($nodes->size) {
 		my @streams = $xpath->findnodes('data', $node);
 		foreach (@streams) {
 			my $stream_id = get_data_item($xpath, '@id', $_);
-			my $stream_unit = get_data_item($xpath, 'unit/text()', $_);
 			
 			my @datapoints = $xpath->findnodes('datapoints/value', $_);
 			foreach (@datapoints) {
 				my $value = get_data_item($xpath, 'text()', $_);
 				my $time = get_data_item($xpath, '@at', $_);
-				print "${id}\t${stream_id}\t${stream_unit}\t${time}\t${value}\n";
+				print "${id}\t${stream_id}\t${time}\t${value}\n";
 			}
 		}
 	}
