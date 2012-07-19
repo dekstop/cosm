@@ -44,6 +44,7 @@ if ($nodes->size) {
 	foreach my $node ($nodes->get_nodelist) {
 		my $id = get_data_item($xpath, '@id', $node);
 		my $created_at = get_data_item($xpath, '@created', $node);
+		my $updated_at = get_data_item($xpath, '@updated', $node);
 		my $title = get_data_item($xpath, 'title/text()', $node);
 		my $feed = get_data_item($xpath, 'feed/text()', $node);
 		my $status = get_data_item($xpath, 'status/text()', $node);
@@ -67,7 +68,7 @@ if ($nodes->size) {
 
 			# First: env metadata, repeated once per stream
 			my $jtags = join(", ", sort(@env_tags));
-			print "${id}\t${created_at}\t${title}\t${feed}\t${status}\t${private}\t${location_name}\t${location_lat}\t${location_lon}\t${jtags}\t";
+			print "${id}\t${created_at}\t${updated_at}\t${title}\t${feed}\t${status}\t${private}\t${location_name}\t${location_lat}\t${location_lon}\t${jtags}\t";
 			
 			# Followed up by stream data and metadata
 			$jtags = join(", ", sort(@stream_tags));

@@ -45,9 +45,9 @@ do
 	echo "Feed ${id}: ${file}"
 	if [ ! -f $file ];
 	then
-		get_feed_history "$id" "${STARTDATE}T${STARTTIME}" "${ENDDATE}T${STARTTIME}" > $file || exit 1
+		get_feed_history "$id" "${STARTDATE}T${STARTTIME}" "${ENDDATE}T${STARTTIME}" > $file #|| exit 1
 		check_cosm_error_response $file || (rm $file; exit 1)
 		echo "Wait..."
-		sleep 2
+		sleep 1
 	fi
 done
