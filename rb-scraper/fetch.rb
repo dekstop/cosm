@@ -59,70 +59,90 @@ conn = PGconn.open(
 	:user => @env[:user], 
 	:password => @env[:password])
 
-res = conn.exec('SELECT r.id as id, envid, starttime, endtime 
-	FROM schedule s 
-	JOIN requests r ON s.id=r.scheduleid 
-	WHERE (r.success IS NULL OR (r.success=false AND r.httpstatus NOT IN(403, 404)))
-	ORDER BY starttime, envid;')
+begin
 
-res.each do |row|
-	rid = row['id']
-	envid = row['envid']
-	starttime = Time.parse(row['starttime']).strftime(@prefs[:dateformat])
-	endtime = Time.parse(row['endtime']).strftime(@prefs[:dateformat])
+	res = conn.exec('SELECT r.id as id, envid, starttime, endtime 
+		FROM schedule s 
+		JOIN requests r ON s.id=r.scheduleid 
+		WHERE (r.success IS NULL OR (r.success=false AND r.httpstatus NOT IN(403, 404)))
+		ORDER BY starttime, envid;')
 
-	dir = "#{@prefs[:cachedir]}/#{starttime}"
-	FileUtils.makedirs(dir)
-	filename = "#{dir}/#{envid}.xml"
-	
-	puts "Feed #{envid}: #{filename}"
-	
-	if (@prefs[:skip_when_file_exists] && File.exists?(filename) && File.size(filename)>0) then
-		puts "File already exists." 
-		conn.exec('UPDATE requests 
-			SET 
-				lastrequest=now(), 
-				success=true, 
-				httpstatus=null,
-				response=null
-			WHERE id=$1', 
-			[rid])
-	else
-		uri = URI.parse("http://api.cosm.com/v2/feeds/#{envid}.xml?key=#{@env[:apikey]}&start=#{starttime}&end=#{endtime}")
-		http = Net::HTTP.new(uri.host, uri.port)
-		response = http.request(Net::HTTP::Get.new(uri.request_uri))
+	res.each do |row|
+		rid = row['id']
+		envid = row['envid']
+		starttime = Time.parse(row['starttime']).strftime(@prefs[:dateformat])
+		endtime = Time.parse(row['endtime']).strftime(@prefs[:dateformat])
+
+		dir = "#{@prefs[:cachedir]}/#{starttime}"
+		FileUtils.makedirs(dir)
+		filename = "#{dir}/#{envid}.xml"
 		
-		if (response.code.to_i==200) then
-			File.open(filename, 'w') {|f| f.write(response.body) }
-
+		puts "Feed #{envid}: #{filename}"
+		
+		if (@prefs[:skip_when_file_exists] && File.exists?(filename) && File.size(filename)>0) then
+			puts "File already exists." 
 			conn.exec('UPDATE requests 
 				SET 
 					lastrequest=now(), 
 					success=true, 
-					httpstatus=$1,
+					httpstatus=null,
 					response=null
-				WHERE id=$2', 
-				[response.code, rid])
+				WHERE id=$1', 
+				[rid])
 		else
-			puts "#{response.code}: #{response.message}"
-			conn.exec('UPDATE requests 
-				SET 
-					lastrequest=now(), 
-					success=false, 
-					httpstatus=$1,
-					response=$2
-				WHERE id=$3', 
-				[response.code, response.body, rid])
-		end
-		
-		#puts "Wait..."
-		#sleep 1
-		delay = throttle.get_delay
-		if (delay > 0) then
-			puts "Waiting: #{delay}"
-			sleep(delay) # This rounds to int, but the throttle auto-adjusts
+			uri = URI.parse("http://api.cosm.com/v2/feeds/#{envid}.xml?key=#{@env[:apikey]}&start=#{starttime}&end=#{endtime}")
+			http = Net::HTTP.new(uri.host, uri.port)
+
+			do_retry = false
+			num_retries_left = 3
+			begin
+				response = http.request(Net::HTTP::Get.new(uri.request_uri))
+			rescue Timeout::Error
+				num_retries_left -= 1
+				if (num_retries_left > 0) then
+					do_retry = true
+					delay = Random.rand(20) + 1
+					puts "Timout error, will try again in #{delay} seconds"
+					sleep (delay)
+				else 
+					puts "Too many failed retries, terminating"
+					exit 1
+				end
+			end while do_retry
+
+			if (response.code.to_i==200) then
+				File.open(filename, 'w') {|f| f.write(response.body) }
+
+				conn.exec('UPDATE requests 
+					SET 
+						lastrequest=now(), 
+						success=true, 
+						httpstatus=$1,
+						response=null
+					WHERE id=$2', 
+					[response.code, rid])
+			else
+				puts "#{response.code}: #{response.message}"
+				conn.exec('UPDATE requests 
+					SET 
+						lastrequest=now(), 
+						success=false, 
+						httpstatus=$1,
+						response=$2
+					WHERE id=$3', 
+					[response.code, response.body, rid])
+			end
+			
+			#puts "Wait..."
+			#sleep 1
+			delay = throttle.get_delay
+			if (delay > 0) then
+				puts "Waiting: #{delay}"
+				sleep(delay) # This rounds to int, but the throttle auto-adjusts
+			end
 		end
 	end
+ensure
+	conn.close
 end
 
-conn.close
