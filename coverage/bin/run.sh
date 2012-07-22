@@ -7,4 +7,4 @@ cp="${APP_HOME}/conf"
 cp="${cp}:${APP_HOME}/build/classes"
 cp="${cp}:${APP_HOME}/lib/*"
 
-java -Djava.awt.headless=true -Xmx1G -classpath "${cp}" de.dekstop.cosm.Coverage "$@" || exit 1
+java -Djava.awt.headless=true -Xmx2G -classpath "${cp}" de.dekstop.cosm.Coverage "$@" || exit 1
