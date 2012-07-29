@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 #
+# Produces TSV data that can be loaded into the "schedule" table.
+# 
 # Created by martind on 2012-07-18.
 
 require 'date'
@@ -34,4 +36,3 @@ begin
 	puts "#{format(curdate + 0.75)}\t#{format(curdate + 1)}\ttrue"
 	curdate += 1
 end while curdate<=todate
-
