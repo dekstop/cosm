@@ -5,13 +5,19 @@ DIR=$( cd "$( dirname "$0" )" && pwd )
 
 if [ $# -eq 0 ]
 then
-	echo "<environment ID>"
+	echo "<environment ID> [yyyy-mm-dd]"
 	echo "This will extract time series data from the XML files of a particular environment."
 	exit 1
 fi
 
 ENVID=$1
-files=`find $DATADIR -name "${ENVID}.xml"`
+PATTERN=$2
+if [ -e $PATTERN ]
+then
+	files=`find $DATADIR -name "${ENVID}.xml"`
+else
+	files=`find $DATADIR -name "${ENVID}.xml" | grep "${PATTERN}"`
+fi
 
 function extract_data() {
 	file="$1"
