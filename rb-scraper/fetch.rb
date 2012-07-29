@@ -94,15 +94,20 @@ begin
 			http = Net::HTTP.new(uri.host, uri.port)
 
 			do_retry = false
+			do_skip = false
 			num_retries_left = 3
 			begin
 				response = http.request(Net::HTTP::Get.new(uri.request_uri))
-			rescue Timeout::Error
+			rescue EOFError # No idea why we get these, but retries never seem to  help
+				puts "Error: #{e.to_s}"
+				do_skip = true
+			rescue StandardError, Timeout::Error => e # need to catch both, Timeout::Error is an Interrupt
+				puts "Error: #{e.to_s}"
 				num_retries_left -= 1
 				if (num_retries_left > 0) then
 					do_retry = true
 					delay = Random.rand(20) + 1
-					puts "Timout error, will try again in #{delay} seconds"
+					puts "Will try again in #{delay} seconds"
 					sleep (delay)
 				else 
 					puts "Too many failed retries, terminating"
@@ -110,7 +115,17 @@ begin
 				end
 			end while do_retry
 
-			if (response.code.to_i==200) then
+			if (do_skip) then
+				puts "Skipping."
+				conn.exec('UPDATE requests 
+					SET 
+						lastrequest=now(), 
+						success=false, 
+						httpstatus=null,
+						response=null
+					WHERE id=$1', 
+					[rid])
+			elsif (response.code.to_i==200) then
 				File.open(filename, 'w') {|f| f.write(response.body) }
 
 				conn.exec('UPDATE requests 
