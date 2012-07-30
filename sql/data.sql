@@ -9,7 +9,7 @@ CREATE TABLE data (
     envid       INTEGER NOT NULL,
     streamid    TEXT NOT NULL,
     timestamp   TIMESTAMP NOT NULL,
-    value       REAL
+    value       DOUBLE PRECISION
 );
 
 CREATE INDEX idx_data_envid_streamid_timestamp ON data USING btree (envid, streamid, "timestamp");
