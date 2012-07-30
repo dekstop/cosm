@@ -56,7 +56,7 @@ mapPlot <- function(mapdata, basemap, title) {
   mapdata <<- mapdata # making it global to address a variable scoping bug below
   
   basemap + 
-    geom_point(data=mapdata, aes(group=1, x=mapdata$Lon, y=mapdata$Lat, cex=mapdata$Count), col='#ff0000', alpha=0.3, type='p', pch=19) +
+    geom_point(data=mapdata, aes(group=1, x=mapdata$Lon, y=mapdata$Lat, cex=mapdata$Count), col='#ff0000', alpha=0.5, type='p', pch=19) +
 		scale_size(range=c(0.3,4), name="Sensors") +
     coord_map(project="mercator", xlim=c(-170,170), ylim=c(-55,70)) +
 		opts(title=title)
