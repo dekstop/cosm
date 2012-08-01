@@ -37,7 +37,10 @@ environments.values.each do |batch|
 		AND e.updated>=starttime
 		AND r.envid IS NULL
 		AND e.id IN (' + batch.join(', ') + ');')
-	puts "Scheduled requests for #{batch.size} environments."
+	print "."
 end
+
+puts
+puts "Scheduled requests for #{res.size} environments."
 
 conn.close
