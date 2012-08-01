@@ -12,5 +12,5 @@ fi
 
 dir="$1"
 batch_size=10
-find "${dir}" -name "*.xml" | xargs -n $batch_size "$PERL" "${DIR}/extract_feed_time_series_data.pl"
+find "${dir}" -name "*.xml" | xargs -n $batch_size "$PERL" "${DIR}/extract_feed_time_series_data.pl" || exit 1
 
