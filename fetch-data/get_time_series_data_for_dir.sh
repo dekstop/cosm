@@ -11,14 +11,6 @@ then
 fi
 
 dir="$1"
-files=`find "${dir}" -name "*.xml"`
+batch_size=10
+find "${dir}" -name "*.xml" | xargs -n $batch_size "$PERL" "${DIR}/extract_feed_time_series_data.pl"
 
-function extract_data() {
-	file="$1"
-	"$PERL" "${DIR}/extract_feed_time_series_data.pl" "${file}"
-}
-
-for file in $files 
-do
-	extract_data $file
-done

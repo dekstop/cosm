@@ -24,39 +24,41 @@ sub get_data_item {
 	return @values[0];
 }
 
-unless (@ARGV == 1) {
+if (@ARGV == 0) {
 	print STDERR "<xml file>\n";
 	exit 1;
 }
 
 use XML::XPath;
 
-my $xpath = XML::XPath->new(filename => $ARGV[0]);
-my $nodes = $xpath->find('/eeml/environment');
+foreach my $filename(@ARGV) {
+	my $xpath = XML::XPath->new(filename => $filename);
+	my $nodes = $xpath->find('/eeml/environment');
 
-unless ($nodes->isa('XML::XPath::NodeSet')) {
-	print STDERR "Query didn't return a nodeset. Value: ";
-	print $nodes->value, "\n";
-	exit 1;
-}
-if ($nodes->size) {
-	# print STDERR "Found ", $nodes->size, " environments.\n";
-	foreach my $node ($nodes->get_nodelist) {
-		my $id = get_data_item($xpath, '@id', $node);
-		
-		my @streams = $xpath->findnodes('data', $node);
-		foreach (@streams) {
-			my $stream_id = get_data_item($xpath, '@id', $_);
+	unless ($nodes->isa('XML::XPath::NodeSet')) {
+		print STDERR "Query didn't return a nodeset. Value: ";
+		print $nodes->value, "\n";
+		exit 1;
+	}
+	if ($nodes->size) {
+		# print STDERR "Found ", $nodes->size, " environments.\n";
+		foreach my $node ($nodes->get_nodelist) {
+			my $id = get_data_item($xpath, '@id', $node);
 			
-			my @datapoints = $xpath->findnodes('datapoints/value', $_);
-			foreach (@datapoints) {
-				my $value = get_data_item($xpath, 'text()', $_);
-				my $time = get_data_item($xpath, '@at', $_);
-				print "${id}\t${stream_id}\t${time}\t${value}\n";
+			my @streams = $xpath->findnodes('data', $node);
+			foreach (@streams) {
+				my $stream_id = get_data_item($xpath, '@id', $_);
+				
+				my @datapoints = $xpath->findnodes('datapoints/value', $_);
+				foreach (@datapoints) {
+					my $value = get_data_item($xpath, 'text()', $_);
+					my $time = get_data_item($xpath, '@at', $_);
+					print "${id}\t${stream_id}\t${time}\t${value}\n";
+				}
 			}
 		}
 	}
-}
-else {
-	print STDERR "No nodes found";
+	else {
+		print STDERR "No nodes found";
+	}
 }
