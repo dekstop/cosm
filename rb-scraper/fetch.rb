@@ -98,7 +98,7 @@ begin
 			num_retries_left = 3
 			begin
 				response = http.request(Net::HTTP::Get.new(uri.request_uri))
-			rescue EOFError # No idea why we get these, but retries never seem to  help
+			rescue EOFError => e # No idea why we get these, but retries never seem to  help
 				puts "Error: #{e.to_s}"
 				do_skip = true
 			rescue StandardError, Timeout::Error => e # need to catch both, Timeout::Error is an Interrupt
