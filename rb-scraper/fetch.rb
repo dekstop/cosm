@@ -64,7 +64,7 @@ begin
 	res = conn.exec('SELECT r.id as id, envid, starttime, endtime 
 		FROM schedule s 
 		JOIN requests r ON s.id=r.scheduleid 
-		WHERE (r.success IS NULL OR (r.success=false AND r.httpstatus NOT IN(403, 404)))
+		WHERE (r.success IS NULL OR (r.success=false AND (r.httpstatus IS NULL OR r.httpstatus NOT IN(403, 404))))
 		ORDER BY starttime, envid;')
 
 	res.each do |row|
@@ -90,7 +90,7 @@ begin
 				WHERE id=$1', 
 				[rid])
 		else
-			uri = URI.parse("http://api.cosm.com/v2/feeds/#{envid}.xml?key=#{@env[:apikey]}&start=#{starttime}&end=#{endtime}")
+			uri = URI.parse("http://api.cosm.com/v2/feeds/#{envid}.xml?key=#{@env[:apikey]}&start=#{starttime}&end=#{endtime}&per_page=1000")
 			http = Net::HTTP.new(uri.host, uri.port)
 
 			do_retry = false
