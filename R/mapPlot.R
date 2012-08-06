@@ -1,14 +1,15 @@
 
 # Example: 
 # 
-# setwd('~/Documents/projects/cosm/data')
-# world <- readShapePoly('maps/TM_WORLD_BORDERS_SIMPL-0.3/TM_WORLD_BORDERS_SIMPL-0.3.shp')
-## world <- readShapePoly('maps/TM_WORLD_BORDERS_SIMPL-0.3-generalised/TM_WORLD_BORDERS_SIMPL-0.3-generalised.shp', delete_null_obj=TRUE)
+# setwd('~/Documents/projects/cosm')
+# world <- readShapePoly('data/maps/TM_WORLD_BORDERS_SIMPL-0.3/TM_WORLD_BORDERS_SIMPL-0.3.shp')
+## world <- readShapePoly('data/maps/TM_WORLD_BORDERS_SIMPL-0.3-generalised/TM_WORLD_BORDERS_SIMPL-0.3-generalised.shp', delete_null_obj=TRUE)
 # p_geo <- basemap(world)
 # 
-# d <- read.csv("feed_index/feed_index.txt", header=TRUE, sep="\t", blank.lines.skip=TRUE, quote="")
+# d <- read.csv("data/feed_index/feed_index.txt", header=TRUE, sep="\t", blank.lines.skip=TRUE, quote="")
 # 
-# savePdf(mapPlot(prepareCosmData(d, "radiation"), p_geo, "Radiation Sensors"), "feed_index/map_test.pdf", 15, 10)
+# points <- stratifyLatLon(selectRecordsForTag("radiation", d))
+# savePdf(mapPlot(points, p_geo, "Radiation Sensors"), "graphics/maps/map_test.pdf", 15, 10)
 
 library(maps)
 library(maptools)
@@ -19,10 +20,10 @@ library(gridExtra)
 
 gpclibPermit()
 
-stratify <- function(data, grid, offset=0) {
+stratify <- function(data, gridSize, latOffset=0, lonOffset=0) {
   transform(data, 
-    Lon = (Lon - offset) - ((Lon - offset) %% grid) + offset, 
-    Lat = (Lat - offset) - ((Lat - offset) %% grid) + offset)
+    Lon = (Lon - lonOffset) - ((Lon - lonOffset) %% gridSize) + lonOffset, 
+    Lat = (Lat - latOffset) - ((Lat - latOffset) %% gridSize) + latOffset)
 }
 
 stratified_hist <- function(data_stratified) {
@@ -44,12 +45,15 @@ basemap <- function(world) {
       axis.ticks = theme_blank(), axis.text.x = theme_blank(), axis.title.x=theme_blank(), axis.text.y = theme_blank(), axis.title.y=theme_blank())
 }
 
-prepareCosmData <- function(d, tagStr) {
-  mapdata <- d[grep(tagStr, d$JOINED_TAGS, ignore.case=TRUE),]
-  mapdata <- subset(mapdata, !is.na(LAT))
+selectRecordsForTag <- function(tagStr, d, tagCol="ALL_TAGS") {
+  d[grep(tagStr, d[,tagCol], ignore.case=TRUE),]
+}
+
+stratifyLatLon <- function(d, gridSize=0.02, latOffset=0, lonOffset=0) {
+  mapdata <- subset(d, !is.na(LAT))
   mapdata$Lat <- mapdata$LAT
   mapdata$Lon <- mapdata$LON
-  stratified_hist(stratify(mapdata, 0.02))
+  stratified_hist(stratify(mapdata, gridSize, latOffset, lonOffset))
 }
 
 mapPlot <- function(mapdata, basemap, title) {
