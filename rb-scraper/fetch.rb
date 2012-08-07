@@ -64,7 +64,14 @@ begin
 	res = conn.exec('SELECT r.id as id, envid, starttime, endtime 
 		FROM schedule s 
 		JOIN requests r ON s.id=r.scheduleid 
-		WHERE (r.success IS NULL OR (r.success=false AND (r.httpstatus IS NULL OR r.httpstatus NOT IN(403, 404))))
+		WHERE 
+			r.paused=FALSE AND (
+			r.success IS NULL OR 
+			(r.success=false AND (
+				r.httpstatus IS NULL OR 
+				r.httpstatus NOT IN(403, 404)
+			))
+		)
 		ORDER BY starttime, envid;')
 
 	res.each do |row|

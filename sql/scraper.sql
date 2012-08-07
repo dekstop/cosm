@@ -20,6 +20,7 @@ CREATE TABLE requests (
     success     BOOLEAN,
     httpstatus  INTEGER,
     response    TEXT,
+    paused      BOOLEAN NOT NULL DEFAULT FALSE,
     UNIQUE(envid, scheduleid)
 );
 
