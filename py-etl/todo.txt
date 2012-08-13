@@ -1,0 +1,5 @@
+- actually read configuration file
+
+- finish 1:n relationship: stream->sample
+- how to remove PK from sample tables?
+- set up unique constraint for tag join tables
