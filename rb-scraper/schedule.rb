@@ -41,6 +41,6 @@ environments.values.each do |batch|
 end
 
 puts
-puts "Scheduled requests for #{res.size} environments."
+puts "Scheduled requests for #{idx} environments."
 
 conn.close
