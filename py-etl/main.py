@@ -4,7 +4,10 @@ from sqlalchemy import *
 
 from app import *
 
+# ========
+# = Main =
+# ========
+
 if __name__ == "__main__":
-    db = create_engine(config.get('db', 'uri'))
-    # db.echo = True
-    Base.metadata.create_all(db) 
+    getDb().echo = True
+    initDb()
