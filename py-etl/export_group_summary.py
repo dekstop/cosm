@@ -200,7 +200,7 @@ if __name__ == "__main__":
     with open(os.path.join(args.outdir, "data.txt"), 'w') as of:
         writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE)
         writer.writerow(['streamid', 'latitude', 'longitude', 'updated', 'unit', 'value'])
-
+    
         for rec in query:
             writer.writerow([ # .encode('utf-8')
                 str(rec.streamid), 
@@ -215,31 +215,63 @@ if __name__ == "__main__":
     # = Daily Count = 
     # ===============
     
-    query = session.query(
-            Data.__table__, 
+    # query = session.query(
+    #         Data.__table__, 
+    #         ToDay(Data.updated).label('day'), 
+    #         func.count(Stream.id.distinct()).label('num_streams'),
+    #         func.count(Data.id.distinct()).label('num_measures'),
+    #     ).join(Stream, Environment).\
+    #     filter(*filters).\
+    #     group_by('day').order_by('day')
+
+    query = select([
             ToDay(Data.updated).label('day'), 
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
-        ).join(Stream, Environment).\
-        filter(*filters).\
-        group_by('day').order_by('day')
-    
-    writeRankingCsv(query, 'day', os.path.join(args.outdir, "data_days.txt"))
+        ], 
+        whereclause = and_(
+            Stream.id == Data.streamid,
+            Environment.id == Stream.envid,
+            *filters
+        ),
+        group_by = 'day',
+        order_by = 'day',
+        bind=getDb())
 
+    result = session.connection().execute(query).fetchall()
+    
+    writeRankingCsv(result, 'day', os.path.join(args.outdir, "data_days2.txt"))
+    
     # ================
     # = Hourly Count = 
     # ================
     
-    query = session.query(
-            Data.__table__, 
+    # query = session.query(
+    #         Data.__table__, 
+    #         ToHour(Data.updated).label('hour'), 
+    #         func.count(Stream.id.distinct()).label('num_streams'),
+    #         func.count(Data.id.distinct()).label('num_measures'),
+    #     ).join(Stream, Environment).\
+    #     filter(*filters).\
+    #     group_by('hour').order_by('hour')
+    
+    query = select([
             ToHour(Data.updated).label('hour'), 
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
-        ).join(Stream, Environment).\
-        filter(*filters).\
-        group_by('hour').order_by('hour')
-    
-    writeRankingCsv(query, 'hour', os.path.join(args.outdir, "data_hours.txt"))
+        ], 
+        whereclause = and_(
+            Stream.id == Data.streamid,
+            Environment.id == Stream.envid,
+            *filters
+        ),
+        group_by = 'hour',
+        order_by = 'hour',
+        bind=getDb())
+
+    result = session.connection().execute(query).fetchall()
+
+    writeRankingCsv(result, 'hour', os.path.join(args.outdir, "data_hours.txt"))
 
     # ====================
     # = Environment Tags =
