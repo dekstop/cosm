@@ -4,25 +4,30 @@ from app import Base
 from sqlalchemy import *
 from sqlalchemy.orm import *
 
+env_tags = Table('env_tags', Base.metadata,
+    Column('env_id', Integer, ForeignKey('environment.id')),
+    Column('tag_id', Integer, ForeignKey('tag.id')),
+    Index('idx_env_tags_envid_tagid', 'tag_id', 'env_id', unique=True)
+)
+stream_tags = Table('stream_tags', Base.metadata,
+    Column('stream_id', Integer, ForeignKey('stream.id')),
+    Column('tag_id', Integer, ForeignKey('tag.id')),
+    Index('idx_stream_tags_streamid_tagid', 'tag_id', 'stream_id', unique=True)
+)
+
 class Tag(Base):
     __tablename__ = 'tag'
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, index=True)
+    
+    environments = relationship("Environment", secondary=env_tags)
+    streams = relationship("Stream", secondary=stream_tags)
 
     def __init__(self, name):
         self.name = name
 
     def __repr__(self):
         return "<Tag:%s>" % (self.name)
-
-env_tags = Table('env_tags', Base.metadata,
-    Column('env_id', Integer, ForeignKey('environment.id')),
-    Column('tag_id', Integer, ForeignKey('tag.id'))
-)
-stream_tags = Table('stream_tags', Base.metadata,
-    Column('stream_id', Integer, ForeignKey('stream.id')),
-    Column('tag_id', Integer, ForeignKey('tag.id'))
-)
 
 class Environment(Base):
     __tablename__ = 'environment'
@@ -64,7 +69,7 @@ class Stream(Base):
     unit = Column(String)
     
     tags = relationship("Tag", secondary=stream_tags)
-    env = relationship("Environment")
+    environments = relationship("Environment")
     
     UniqueConstraint('envid', 'streamid', name='uix_stream_envid_streamid')
     # Index('idx_stream_envid_streamid', 'envid', 'streamid', unique=True)

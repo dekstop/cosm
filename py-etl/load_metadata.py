@@ -37,19 +37,17 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # init DB
-    db = create_engine(config.get('db', 'uri'))
-    # db.echo = True
-    Base.metadata.create_all(db) 
-    Session = sessionmaker(bind=db)
-    session = Session()
+    initDb()
+    session = getSession()
 
     # first load environments
     print "Loading %s ..." % (args.envfile)
     reader = csv.DictReader(open(args.envfile, 'rb'), 
-        delimiter='	', quoting=csv.QUOTE_NONE)
+        delimiter='	', quoting=csv.QUOTE_NONE,
+        encoding='utf-8')
     
     for line in reader:
-        line = convert(line)
+        # line = convert(line)
         env = getEnvironment(session, line['ID'], line)
         session.flush()
         if (reader.line_num % 1000 == 0):
