@@ -1,5 +1,7 @@
+import ConfigParser
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+import os
 
 from sqlalchemy import *
 from sqlalchemy.orm import *
@@ -8,6 +10,10 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 from models import *
+
+SETTINGS_FILE=os.environ['SETTINGS_FILE']
+config = ConfigParser.ConfigParser()
+config.readfp(open(SETTINGS_FILE))
 
 # db = create_engine('sqlite:///var/test.db')
 # # db.echo = True

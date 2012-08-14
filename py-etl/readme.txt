@@ -21,6 +21,7 @@ http://jamiecurle.co.uk/blog/installing-pip-virtualenv-and-virtualenvwrapper-on-
 Edit config/development.cfg
 
 Then:
+$ make init
 $ make install
 
  =============

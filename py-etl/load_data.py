@@ -37,7 +37,7 @@ if __name__ == "__main__":
     if (args.skipheader):
         reader.next()
     
-    db = create_engine('sqlite:///var/test.db')
+    db = create_engine(config.get('db', 'uri'))
     # db.echo = True
     Base.metadata.create_all(db) 
     Session = sessionmaker(bind=db)
