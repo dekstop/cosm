@@ -6,11 +6,11 @@ CREATE TABLE schedule (
     UNIQUE(starttime, endtime)
 );
 
-CREATE TABLE environments (
-    id          INTEGER NOT NULL,
-    created     TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    updated     TIMESTAMP WITHOUT TIME ZONE NOT NULL
-);
+-- CREATE TABLE environments (
+--     id          INTEGER NOT NULL,
+--     created     TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+--     updated     TIMESTAMP WITHOUT TIME ZONE NOT NULL
+-- );
 
 CREATE TABLE requests (
     id          SERIAL PRIMARY KEY,
