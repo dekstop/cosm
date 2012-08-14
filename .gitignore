@@ -1,3 +1,6 @@
 fetch-data/env.sh
 rb-scraper/env.rb
 coverage/build/
+*.pyc
+py-etl/var/test.db
+py-etl/env
