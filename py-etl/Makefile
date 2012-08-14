@@ -7,11 +7,11 @@ ifeq ($(hostname),paris)
 SETTINGS=./config/live.cfg
 endif
 
-install:
-	./env/bin/python ./env/bin/pip install -r ./requirements.txt
-
 init:
 	virtualenv ./env
+
+install:
+	./env/bin/python ./env/bin/pip install -r ./requirements.txt
 
 # This is just for test runs
 run:
