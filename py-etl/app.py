@@ -66,7 +66,7 @@ def getEnvironment(session, id, dict):
 
 def getStream(session, envid, streamid, dict=None):
     try:
-      return session.query(Stream).filter_by(envid=envid).filter_by(id=streamid).one()
+      return session.query(Stream).filter_by(envid=envid).filter_by(streamid=streamid).one()
     except:
       stream = Stream(envid, streamid)
       if (dict != None):
