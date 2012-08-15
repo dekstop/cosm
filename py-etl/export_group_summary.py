@@ -240,7 +240,7 @@ if __name__ == "__main__":
 
     result = session.connection().execute(query).fetchall()
     
-    writeRankingCsv(result, 'day', os.path.join(args.outdir, "data_days2.txt"))
+    writeRankingCsv(result, 'day', os.path.join(args.outdir, "data_days.txt"))
     
     # ================
     # = Hourly Count = 
