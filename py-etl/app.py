@@ -58,7 +58,7 @@ class ToIsoDate(ColumnClause):
 
 @compiles(ToIsoDate, 'postgresql')
 def compile_toisodate(element, compiler, **kw):
-    return "TO_CHAR(%s, 'YYYY-MM-DDTHH24:MI:SS')" % element.name
+    return "TO_CHAR(%s, 'YYYY-MM-DD\"T\"HH24:MI:SS')" % element.name
     
 @compiles(ToIsoDate, 'sqlite')
 def compile_toisodate(element, compiler, **kw):
@@ -70,7 +70,7 @@ class ToHour(ColumnClause):
 
 @compiles(ToHour, 'postgresql')
 def compile_tohour(element, compiler, **kw):
-    return "TO_CHAR(%s, 'YYYY-MM-DDTHH24:00:00')" % element.name
+    return "TO_CHAR(%s, 'YYYY-MM-DD\"T\"HH24:00:00')" % element.name
     
 @compiles(ToHour, 'sqlite')
 def compile_tohour(element, compiler, **kw):

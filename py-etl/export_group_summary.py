@@ -22,7 +22,7 @@ from app import *
 # - an integer column called 'num_measures'
 def writeRankingCsv(query, nameColumn, filename):
     with open(filename, 'w') as of:
-        writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE)
+        writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
         writer.writerow([nameColumn, 'num_streams', 'num_measures'])
 
         for rec in query:
@@ -198,7 +198,7 @@ if __name__ == "__main__":
         filter(*filters)
     
     with open(os.path.join(args.outdir, "data.txt"), 'w') as of:
-        writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE)
+        writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
         writer.writerow(['streamid', 'latitude', 'longitude', 'updated', 'unit', 'value'])
     
         for rec in query:
