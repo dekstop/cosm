@@ -43,11 +43,10 @@ if __name__ == "__main__":
     # first load environments
     print "Loading %s ..." % (args.envfile)
     reader = csv.DictReader(open(args.envfile, 'rb'), 
-        delimiter='	', quoting=csv.QUOTE_NONE,
-        encoding='utf-8')
+        delimiter='	', quoting=csv.QUOTE_NONE)
     
     for line in reader:
-        # line = convert(line)
+        line = convert(line)
         env = getEnvironment(session, line['ID'], line)
         session.flush()
         if (reader.line_num % 1000 == 0):

@@ -18,6 +18,8 @@ if __name__ == "__main__":
     parser.add_argument('filename', help='the data file to be loaded')
     parser.add_argument('--skip-header', dest='skipheader', 
         action='store_true', help='skip the first row of data')
+    parser.add_argument('--no-cache', dest='nocache', 
+        action='store_true', help='don\'t cache foreign key IDs' )
     parser.add_argument('-b', '--batch-size', dest='batchsize', 
         action='store', default=10000,
         help='transaction size (in number of lines)')
@@ -54,17 +56,36 @@ if __name__ == "__main__":
     # 
     # print "Converting data..."
 
+    fkCache = {}
+
     print "Loading data..."
     for line in reader:
+        
+        envid = line[0]
+        streamid = line[1]
+        updated = datetime.strptime(line[2], args.dateformat)
         
         value = None
         try:
             value = Decimal(line[3].strip())
         except InvalidOperation:
             pass
-              
-        data = Data(getStream(session, line[0], line[1]),
-            datetime.strptime(line[2], args.dateformat), 
+        
+        # Look up foreign key
+        fk = None
+        if (args.nocache):
+            fk = getStream(session, envid, streamid)
+        else:
+            key = (envid, streamid)
+            if (not key in fkCache):
+                # print "Caching foreign key for stream %s" % str(key)
+                fkCache[key] = getStream(session, envid, streamid)
+            fk = fkCache[key]
+        
+        # Store record
+        data = Data(
+            fk,
+            updated, 
             value)
     
         session.add(data)
@@ -74,7 +95,9 @@ if __name__ == "__main__":
             print "%d lines..." % reader.line_num
 
         if (reader.line_num % args.batchsize == 0):
+            print "committ()"
             session.commit()
 
     print "%d lines." % reader.line_num
+    print "committ()"
     session.commit()
