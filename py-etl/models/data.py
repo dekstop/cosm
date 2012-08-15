@@ -33,7 +33,7 @@ class Data(Base):
     
     stream = relationship("Stream")
     
-    # Index('idx_data_updated', 'updated', unique=False)
+    Index('idx_data_updated', 'updated', unique=False)
 
     def __init__(self, stream, updated, value):
         self.stream = stream
