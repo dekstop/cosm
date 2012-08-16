@@ -15,6 +15,16 @@ from app import *
 # = Util =
 # ========
 
+def encode(str):
+    if str is None:
+        return None
+    return str.encode('utf-8')
+
+def default(str, defaultstr):
+    if str is None:
+        return defaultstr
+    return str
+
 # Write a ranking query result set to a CSV file.
 # The query needs to select three columns:
 # - a string column, the name is specified via the nameColumn parameter
@@ -27,7 +37,7 @@ def writeRankingCsv(query, nameColumn, filename):
 
         for rec in query:
             writer.writerow([
-                getattr(rec, nameColumn).encode('utf-8'), 
+                default(encode(getattr(rec, nameColumn)), '(no value available)'), 
                 str(rec.num_streams), 
                 str(rec.num_measures)
             ])
@@ -63,8 +73,11 @@ if __name__ == "__main__":
         help='a comma-separated list of min and max latitude')
     parser.add_argument('--longitude', action='store', dest='longitude', 
         help='a comma-separated list of min and max longitude')
-    parser.add_argument('-n', '--not-null', dest='notnull', 
-        action='store_true', help='exclude records where measured value is null (not numeric)')
+    parser.add_argument('-n', '--not-null', action='store_true', dest='notnull', 
+        help='exclude records where measured value is null (not numeric)')
+
+    parser.add_argument('--skip-raw-data', action="store_true", dest='skip_rawdata', 
+        help='don\'t include raw sensor data in the export')
 
     args = parser.parse_args()
     
@@ -187,29 +200,31 @@ if __name__ == "__main__":
     # = Sensor Data = 
     # ===============
     
-    query = session.query(
-            Stream.id.label('streamid'),
-            Environment.latitude.label('latitude'),
-            Environment.longitude.label('longitude'),
-            Data.updated.label('updated'),
-            Stream.unit.label('unit'),
-            Data.value.label('value')
-        ).join(Environment, Data).\
-        filter(*filters)
+    if (args.skip_rawdata==False):
     
-    with open(os.path.join(args.outdir, "data.txt"), 'w') as of:
-        writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
-        writer.writerow(['streamid', 'latitude', 'longitude', 'updated', 'unit', 'value'])
+        query = session.query(
+                Stream.id.label('streamid'),
+                Environment.latitude.label('latitude'),
+                Environment.longitude.label('longitude'),
+                Data.updated.label('updated'),
+                Stream.unit.label('unit'),
+                Data.value.label('value')
+            ).join(Environment, Data).\
+            filter(*filters)
     
-        for rec in query:
-            writer.writerow([ # .encode('utf-8')
-                str(rec.streamid), 
-                str(rec.latitude), 
-                str(rec.longitude), 
-                str(rec.updated), 
-                rec.unit.encode('utf-8'),
-                str(rec.value)
-            ])
+        with open(os.path.join(args.outdir, "data.txt"), 'w') as of:
+            writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
+            writer.writerow(['streamid', 'latitude', 'longitude', 'updated', 'unit', 'value'])
+    
+            for rec in query:
+                writer.writerow([ # .encode('utf-8')
+                    str(rec.streamid), 
+                    str(rec.latitude), 
+                    str(rec.longitude), 
+                    str(rec.updated), 
+                    rec.unit.encode('utf-8'),
+                    str(rec.value)
+                ])
 
     # ===============
     # = Daily Count = 

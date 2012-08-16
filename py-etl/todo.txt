@@ -1,5 +1,25 @@
-- actually read configuration file
+- extract unit symbol, type
+- extract location elevation ("ele") and waypoints
+- extract environment website
 
-- finish 1:n relationship: stream->sample
-- how to remove PK from sample tables?
-- set up unique constraint for tag join tables
+- write a tool that fills in missing metadata (tags, units) for "blank"/renamed streams 
+
+  1. identify env/stream IDs
+  - how can we find them? e.g. all streams without tags, units:
+    (this is where it helps that we store empty strings as tags, units)
+    cosm=# select count(distinct s.id) from stream s where unit is null;
+     count 
+    -------
+      2459
+
+    cosm=# select count(distinct s.id) from stream s left outer join stream_tags st on s.id=st.stream_id where st.tag_id is null;
+     count 
+    -------
+      2459
+
+  2. identify period
+  - oldest associated data point
+
+  3. find XML, parse, update
+
+- sequence analyses

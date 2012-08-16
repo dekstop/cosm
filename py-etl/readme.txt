@@ -29,3 +29,7 @@ $ make install
  =============
 
 TODO
+- how to initialise the DB
+- how to load metadata tables
+- how to load data
+- how to query for data
