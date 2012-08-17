@@ -25,19 +25,26 @@ def default(str, defaultstr):
         return defaultstr
     return str
 
-# Write a ranking query result set to a CSV file.
+# Write a ranking query result set to a CSV file. 
 # The query needs to select three columns:
-# - a string column, the name is specified via the nameColumn parameter
+# - one or more string columns, the name is specified via the title or attribute parameter
 # - an integer column called 'num_streams'
 # - an integer column called 'num_measures'
-def writeRankingCsv(query, nameColumn, filename):
+def writeRankingCsv(query, filename, column='name', title=None):
+    if not type(column) is list:
+        column = [column]
+    if title is None:
+        title = column
+    elif not type(title) is list:
+        title = [title]
     with open(filename, 'w') as of:
         writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
-        writer.writerow([nameColumn, 'num_streams', 'num_measures'])
+        writer.writerow(title + ['num_streams', 'num_measures'])
 
         for rec in query:
-            writer.writerow([
-                default(encode(getattr(rec, nameColumn)), '(no value available)'), 
+            val = [default(encode(getattr(rec, attr)), '(no value available)') for attr in column]
+            writer.writerow(
+                val + [
                 str(rec.num_streams), 
                 str(rec.num_measures)
             ])
@@ -255,7 +262,7 @@ if __name__ == "__main__":
 
     result = session.connection().execute(query).fetchall()
     
-    writeRankingCsv(result, 'day', os.path.join(args.outdir, "data_days.txt"))
+    writeRankingCsv(result, os.path.join(args.outdir, "data_days.txt"), column='day')
     
     # ================
     # = Hourly Count = 
@@ -286,7 +293,7 @@ if __name__ == "__main__":
 
     result = session.connection().execute(query).fetchall()
 
-    writeRankingCsv(result, 'hour', os.path.join(args.outdir, "data_hours.txt"))
+    writeRankingCsv(result, os.path.join(args.outdir, "data_hours.txt"), column='hour')
 
     # ====================
     # = Environment Tags =
@@ -302,7 +309,7 @@ if __name__ == "__main__":
         filter(*filters).\
         group_by('tag_name').order_by('num_streams desc')
 
-    writeRankingCsv(query, 'tag_name', os.path.join(args.outdir, "environment_tags.txt"))
+    writeRankingCsv(query, os.path.join(args.outdir, "environment_tags.txt"), column='tag_name', title='tag')
 
     # ===============
     # = Stream Tags =
@@ -318,7 +325,7 @@ if __name__ == "__main__":
         filter(*filters).\
         group_by('tag_name').order_by('num_streams desc')
 
-    writeRankingCsv(query, 'tag_name', os.path.join(args.outdir, "stream_tags.txt"))
+    writeRankingCsv(query, os.path.join(args.outdir, "stream_tags.txt"), column='tag_name', title='tag')
 
     # =========
     # = Units =
@@ -334,7 +341,24 @@ if __name__ == "__main__":
         filter(*filters).\
         group_by('unit').order_by('num_streams desc')
 
-    writeRankingCsv(query, 'unit', os.path.join(args.outdir, "units.txt"))
+    writeRankingCsv(query, os.path.join(args.outdir, "units.txt"), column='unit')
+
+    # ===============
+    # = Coordinates =
+    # ===============
+    
+    # Ranking of geo-coordinates for streams
+
+    query = session.query(
+            func.lower(Environment.latitude).label('latitude'), 
+            func.lower(Environment.longitude).label('longitude'), 
+            func.count(Stream.id.distinct()).label('num_streams'),
+            func.count(Data.id.distinct()).label('num_measures'),
+        ).join(Stream, Data).\
+        filter(*filters).\
+        group_by('latitude', 'longitude').order_by('num_streams desc')
+
+    writeRankingCsv(query, os.path.join(args.outdir, "coordinates.txt"), column=['latitude', 'longitude'])
 
     # ============
     # = Location =
@@ -350,7 +374,7 @@ if __name__ == "__main__":
         filter(*filters).\
         group_by('location').order_by('num_streams desc')
 
-    writeRankingCsv(query, 'location', os.path.join(args.outdir, "locations.txt"))
+    writeRankingCsv(query, os.path.join(args.outdir, "locations.txt"), column='location')
 
     # ==========
     # = Domain =
@@ -366,7 +390,7 @@ if __name__ == "__main__":
         filter(*filters).\
         group_by('location_domain').order_by('num_streams desc')
 
-    writeRankingCsv(query, 'location_domain', os.path.join(args.outdir, "location_domains.txt"))
+    writeRankingCsv(query, os.path.join(args.outdir, "location_domains.txt"), column='location_domain')
 
     # ============
     # = Exposure =
@@ -382,7 +406,7 @@ if __name__ == "__main__":
         filter(*filters).\
         group_by('location_exposure').order_by('num_streams desc')
 
-    writeRankingCsv(query, 'location_exposure', os.path.join(args.outdir, "location_exposures.txt"))
+    writeRankingCsv(query, os.path.join(args.outdir, "location_exposures.txt"), column='location_exposure')
 
     # ===============
     # = Disposition =
@@ -398,4 +422,4 @@ if __name__ == "__main__":
         filter(*filters).\
         group_by('location_disposition').order_by('num_streams desc')
 
-    writeRankingCsv(query, 'location_disposition', os.path.join(args.outdir, "location_dispositions.txt"))
+    writeRankingCsv(query, os.path.join(args.outdir, "location_dispositions.txt"), column='location_disposition')
