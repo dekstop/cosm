@@ -18,6 +18,8 @@ from app import *
 def encode(str):
     if str is None:
         return None
+    if isinstance(str, basestring)==False:
+        return str
     return str.encode('utf-8')
 
 def default(str, defaultstr):
@@ -350,8 +352,8 @@ if __name__ == "__main__":
     # Ranking of geo-coordinates for streams
 
     query = session.query(
-            func.lower(Environment.latitude).label('latitude'), 
-            func.lower(Environment.longitude).label('longitude'), 
+            Environment.latitude.label('latitude'), 
+            Environment.longitude.label('longitude'), 
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Stream, Data).\
