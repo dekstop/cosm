@@ -128,10 +128,12 @@ if __name__ == "__main__":
     latitude = None
     if (args.latitude is not None):
         latitude = [Decimal(x) for x in args.latitude.split(',')]
+        latitude.sort()
     
     longitude = None
     if (args.longitude is not None):
         longitude = [Decimal(x) for x in args.longitude.split(',')]
+        longitude.sort()
     
     # getDb().echo = True
     session = getSession()
@@ -231,7 +233,7 @@ if __name__ == "__main__":
                     str(rec.latitude), 
                     str(rec.longitude), 
                     str(rec.updated), 
-                    rec.unit.encode('utf-8'),
+                    encode(rec.unit),
                     str(rec.value)
                 ])
 
