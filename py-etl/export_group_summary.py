@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import csv
 import argparse
+import csv
 import sys
 
 from sqlalchemy import *
@@ -51,6 +51,13 @@ def writeRankingCsv(query, filename, column='name', title=None):
                 str(rec.num_measures)
             ])
 
+def writeInfoFile(args, filename):
+    with open(filename, 'w') as of:
+        for k in sorted(vars(args).keys()):
+            v = getattr(args, k)
+            if v is not None:
+                of.write("%s = %s\n" % (k, v))
+
 # ========
 # = Main =
 # ========
@@ -100,6 +107,8 @@ if __name__ == "__main__":
     if (os.path.exists(args.outdir)==False):
         # print "Making directory: %s" % (args.streamfile)
         os.makedirs(args.outdir)
+    
+    writeInfoFile(args, os.path.join(args.outdir, "__info__.txt"))
 
     tags = None
     if (args.tags is not None):
