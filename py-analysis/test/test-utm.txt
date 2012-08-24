@@ -1,0 +1,7 @@
+Alice	tag1	1
+Alice	tag2	5
+Alice	tag3	2
+Bob	tag1	7
+Bob	tag2	3
+Charles	tag1	11
+Darwin	tag4	1

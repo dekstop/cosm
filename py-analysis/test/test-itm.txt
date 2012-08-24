@@ -1,0 +1,7 @@
+Bread	tag1	1
+Honey	tag2	5
+Milk	tag3	2
+Bread	tag1	2
+Honey	tag2	3
+Bread	tag1	1
+Bread	tag4	1
