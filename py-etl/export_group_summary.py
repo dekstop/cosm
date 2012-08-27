@@ -62,21 +62,22 @@ def writeInfoFile(args, filename):
 # = Main =
 # ========
 
-DATEFORMAT = '%Y-%m-%dT%H:%M:%S'
+DATETIMEFORMAT = '%Y-%m-%dT%H:%M:%S'
+DATEFORMAT = '%Y-%m-%d'
 
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(
         description='Export summary statistics for a group of datastreams.',
-        epilog='Date parameters need to be provided in this format: %s' % DATEFORMAT)
+        epilog='Date parameters need to be provided in this format: %s' % DATETIMEFORMAT)
     parser.add_argument('fromdate', help='start date, inclusive')
     parser.add_argument('todate', help='end date, exclusive')
     parser.add_argument('outdir', help='name of output directory')
 
     parser.add_argument('-t', '--filter-tags', action='store', dest='tags', 
-        help='a comma-separated list of stream tags')
+        help='a comma-separated list of stream tags, or a filename (with one term per line)')
     parser.add_argument('-u', '--filter-units', action='store', dest='units', 
-        help='a comma-separated list of stream units')
+        help='a comma-separated list of stream units, or a filename (with one term per line)')
     parser.add_argument('-l', '--location', action='store', dest='location', 
         help='a comma-separated list of location names')
     parser.add_argument('-o', '--domain', action='store', dest='domain', 
@@ -92,8 +93,8 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--not-null', action='store_true', dest='notnull', 
         help='exclude records where measured value is null (not numeric)')
 
-    parser.add_argument('--skip-raw-data', action="store_true", dest='skip_rawdata', 
-        help='don\'t include raw sensor data in the export')
+    parser.add_argument('--raw-data', action="store_true", dest='rawdata', 
+        help='include raw sensor data in the export')
 
     args = parser.parse_args()
     
@@ -101,8 +102,8 @@ if __name__ == "__main__":
     # = Init =
     # ========
 
-    fromdate = datetime.strptime(args.fromdate, DATEFORMAT)
-    todate = datetime.strptime(args.todate, DATEFORMAT)
+    fromdate = datetime.strptime(args.fromdate, DATETIMEFORMAT)
+    todate = datetime.strptime(args.todate, DATETIMEFORMAT)
     
     if (os.path.exists(args.outdir)==False):
         # print "Making directory: %s" % (args.streamfile)
@@ -111,12 +112,20 @@ if __name__ == "__main__":
     writeInfoFile(args, os.path.join(args.outdir, "__info__.txt"))
 
     tags = None
-    if (args.tags is not None):
-        tags = args.tags.decode("utf-8").split(',')
+    if (args.units is not None):
+        if os.path.isfile(args.tags):
+            with open(args.tags) as f:
+                tags = f.readlines()
+        else:
+            tags = args.tags.decode("utf-8").split(',')
     
     units = None
     if (args.units is not None):
-        units = args.units.decode("utf-8").split(',')
+        if os.path.isfile(args.units):
+            with open(args.units) as f:
+                units = f.readlines()
+        else:
+            units = args.units.decode("utf-8").split(',')
     
     locations = None
     if (args.location is not None):
@@ -144,7 +153,7 @@ if __name__ == "__main__":
         longitude = [Decimal(x) for x in args.longitude.split(',')]
         longitude.sort()
     
-    # getDb().echo = True
+    getDb().echo = True
     session = getSession()
 
     # ================
@@ -158,6 +167,11 @@ if __name__ == "__main__":
         Data.updated < todate
     )
 
+    aggregatedDateFilter = and_(
+        DataDays.date >= fromdate.strftime(DATEFORMAT), 
+        DataDays.date < todate.strftime(DATEFORMAT)
+    )
+    
     streamsForTagFilter = None
     if (tags is not None):
         tagStreamids = session.query(Stream.id).join(Stream.tags).filter(
@@ -203,8 +217,7 @@ if __name__ == "__main__":
     if args.notnull:
         valueNotNullFilter = Data.value != null()
 
-    filters = [
-        dateFilter, 
+    generalFilters = [
         streamUnitFilter, 
         streamsForTagFilter, 
         environmentsForLocationFilter, 
@@ -215,12 +228,15 @@ if __name__ == "__main__":
         envLonFilter,
         valueNotNullFilter
     ]
+    
+    dataTableFilters = [dateFilter] + generalFilters
+    aggregationTableFilters = [aggregatedDateFilter] + generalFilters
 
     # ===============
     # = Sensor Data = 
     # ===============
     
-    if (args.skip_rawdata==False):
+    if (args.rawdata==True):
     
         query = session.query(
                 Stream.id.label('streamid'),
@@ -230,7 +246,7 @@ if __name__ == "__main__":
                 Stream.unit.label('unit'),
                 Data.value.label('value')
             ).join(Environment, Data).\
-            filter(*filters)
+            filter(*dataTableFilters)
     
         with open(os.path.join(args.outdir, "data.txt"), 'w') as of:
             writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
@@ -246,6 +262,47 @@ if __name__ == "__main__":
                     str(rec.value)
                 ])
 
+    # ====================
+    # = Aggregation Data = 
+    # ====================
+    
+    query = select([
+            DataDays.date.label('day'), 
+            Stream.id.label('streamid'),
+            DataDays.count.label('count'),
+            DataDays.min.label('min'),
+            DataDays.max.label('max'),
+            DataDays.mean.label('mean'),
+            DataDays.median.label('median'),
+            DataDays.sd.label('sd')
+        ], 
+        whereclause = and_(
+            Stream.id == DataDays.streamid,
+            Environment.id == Stream.envid,
+            *dataTableFilters
+        ),
+        group_by = 'day',
+        order_by = 'day',
+        bind=getDb())
+        
+    result = session.connection().execute(query).fetchall()
+
+    with open(os.path.join(args.outdir, "data_stream_days.txt"), 'w') as of:
+        writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
+        writer.writerow(['date', 'streamid', 'count', 'min', 'max', 'mean', 'median', 'sd'])
+    
+        for rec in result:
+            writer.writerow([ # .encode('utf-8')
+                str(rec.day),
+                str(rec.streamid),
+                str(rec.count),
+                str(rec.min),
+                str(rec.max),
+                str(rec.mean),
+                str(rec.median),
+                str(rec.sd)
+            ])
+    
     # ===============
     # = Daily Count = 
     # ===============
@@ -256,7 +313,7 @@ if __name__ == "__main__":
     #         func.count(Stream.id.distinct()).label('num_streams'),
     #         func.count(Data.id.distinct()).label('num_measures'),
     #     ).join(Stream, Environment).\
-    #     filter(*filters).\
+    #     filter(*dataTableFilters).\
     #     group_by('day').order_by('day')
 
     query = select([
@@ -267,7 +324,7 @@ if __name__ == "__main__":
         whereclause = and_(
             Stream.id == Data.streamid,
             Environment.id == Stream.envid,
-            *filters
+            *dataTableFilters
         ),
         group_by = 'day',
         order_by = 'day',
@@ -287,7 +344,7 @@ if __name__ == "__main__":
     #         func.count(Stream.id.distinct()).label('num_streams'),
     #         func.count(Data.id.distinct()).label('num_measures'),
     #     ).join(Stream, Environment).\
-    #     filter(*filters).\
+    #     filter(*dataTableFilters).\
     #     group_by('hour').order_by('hour')
     
     query = select([
@@ -298,7 +355,7 @@ if __name__ == "__main__":
         whereclause = and_(
             Stream.id == Data.streamid,
             Environment.id == Stream.envid,
-            *filters
+            *dataTableFilters
         ),
         group_by = 'hour',
         order_by = 'hour',
@@ -319,7 +376,7 @@ if __name__ == "__main__":
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Tag.environments, Stream, Data).\
-        filter(*filters).\
+        filter(*dataTableFilters).\
         group_by('tag_name').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "environment_tags.txt"), column='tag_name', title='tag')
@@ -335,7 +392,7 @@ if __name__ == "__main__":
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Tag.streams, Environment, Data).\
-        filter(*filters).\
+        filter(*dataTableFilters).\
         group_by('tag_name').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "stream_tags.txt"), column='tag_name', title='tag')
@@ -351,7 +408,7 @@ if __name__ == "__main__":
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Data, Environment).\
-        filter(*filters).\
+        filter(*dataTableFilters).\
         group_by('unit').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "units.txt"), column='unit')
@@ -368,7 +425,7 @@ if __name__ == "__main__":
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Stream, Data).\
-        filter(*filters).\
+        filter(*dataTableFilters).\
         group_by('latitude', 'longitude').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "coordinates.txt"), column=['latitude', 'longitude'])
@@ -384,7 +441,7 @@ if __name__ == "__main__":
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Stream, Data).\
-        filter(*filters).\
+        filter(*dataTableFilters).\
         group_by('location').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "locations.txt"), column='location')
@@ -400,7 +457,7 @@ if __name__ == "__main__":
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Stream, Data).\
-        filter(*filters).\
+        filter(*dataTableFilters).\
         group_by('location_domain').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "location_domains.txt"), column='location_domain')
@@ -416,7 +473,7 @@ if __name__ == "__main__":
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Stream, Data).\
-        filter(*filters).\
+        filter(*dataTableFilters).\
         group_by('location_exposure').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "location_exposures.txt"), column='location_exposure')
@@ -432,7 +489,7 @@ if __name__ == "__main__":
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Stream, Data).\
-        filter(*filters).\
+        filter(*dataTableFilters).\
         group_by('location_disposition').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "location_dispositions.txt"), column='location_disposition')
