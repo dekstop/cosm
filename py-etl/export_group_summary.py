@@ -4,8 +4,7 @@ import csv
 import sys
 
 from sqlalchemy import *
-# from sqlalchemy.orm import *
-# from sqlalchemy.schema import *
+from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import and_, or_, not_
 from sqlalchemy.sql.expression import *
 
@@ -27,24 +26,31 @@ def default(str, defaultstr):
         return defaultstr
     return str
 
+def getMeasureColumns(query, labelColumns):
+    if (type(query)==list): # already executed
+        return [k for k in query[0].keys() if k not in labelColumns]
+    elif (type(query)==Query):
+        print(query)
+    else:
+        return ['num_streams', 'num_measures'] # Giving up.
+
 # Write a ranking query result set to a CSV file. 
 # The query needs to select three columns:
-# - one or more string columns, the name is specified via the title or attribute parameter
+# - one or more string columns, the name is specified via the labelColumns parameter
 # - an integer column called 'num_streams'
 # - an integer column called 'num_measures'
-def writeRankingCsv(query, filename, column='name', title=None):
-    if not type(column) is list:
-        column = [column]
-    if title is None:
-        title = column
-    elif not type(title) is list:
-        title = [title]
+def writeRankingCsv(query, filename, labelColumns='name'):
+    if not type(labelColumns) is list:
+        labelColumns = [labelColumns]
+    if (type(query)==Query):
+        query = query.execute()
     with open(filename, 'w') as of:
         writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
-        writer.writerow(title + ['num_streams', 'num_measures'])
-
+        print(type(query))
+        print(getMeasureColumns(query, labelColumns))
+        writer.writerow(labelColumns + ['num_streams', 'num_measures'])
         for rec in query:
-            val = [default(encode(getattr(rec, attr)), '(no value available)') for attr in column]
+            val = [default(encode(getattr(rec, attr)), '(no value available)') for attr in labelColumns]
             writer.writerow(
                 val + [
                 str(rec.num_streams), 
@@ -112,7 +118,7 @@ if __name__ == "__main__":
     writeInfoFile(args, os.path.join(args.outdir, "__info__.txt"))
 
     tags = None
-    if (args.units is not None):
+    if (args.tags is not None):
         if os.path.isfile(args.tags):
             with open(args.tags) as f:
                 tags = f.readlines()
@@ -171,7 +177,7 @@ if __name__ == "__main__":
         DataDays.date >= fromdate.strftime(DATEFORMAT), 
         DataDays.date < todate.strftime(DATEFORMAT)
     )
-    
+
     streamsForTagFilter = None
     if (tags is not None):
         tagStreamids = session.query(Stream.id).join(Stream.tags).filter(
@@ -279,7 +285,7 @@ if __name__ == "__main__":
         whereclause = and_(
             Stream.id == DataDays.streamid,
             Environment.id == Stream.envid,
-            *dataTableFilters
+            *aggregatedDateFilter
         ),
         group_by = 'day',
         order_by = 'day',
@@ -302,7 +308,7 @@ if __name__ == "__main__":
                 str(rec.median),
                 str(rec.sd)
             ])
-    
+ 
     # ===============
     # = Daily Count = 
     # ===============
@@ -320,6 +326,11 @@ if __name__ == "__main__":
             ToDay(Data.updated).label('day'), 
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
+            func.min(Data.value).label('min'), 
+            func.max(Data.value).label('max'), 
+            func.avg(Data.value).label('mean'), 
+            # func.median(Data.value).label('median'), 
+            # func.stddev(Data.value).label('sd')
         ], 
         whereclause = and_(
             Stream.id == Data.streamid,
@@ -332,7 +343,7 @@ if __name__ == "__main__":
 
     result = session.connection().execute(query).fetchall()
     
-    writeRankingCsv(result, os.path.join(args.outdir, "data_days.txt"), column='day')
+    writeRankingCsv(result, os.path.join(args.outdir, "data_days.txt"), labelColumns='day')
     
     # ================
     # = Hourly Count = 
@@ -363,7 +374,7 @@ if __name__ == "__main__":
 
     result = session.connection().execute(query).fetchall()
 
-    writeRankingCsv(result, os.path.join(args.outdir, "data_hours.txt"), column='hour')
+    writeRankingCsv(result, os.path.join(args.outdir, "data_hours.txt"), labelColumns='hour')
 
     # ====================
     # = Environment Tags =
@@ -372,14 +383,14 @@ if __name__ == "__main__":
     # Tag frequency for streams
 
     query = session.query(
-            func.lower(Tag.name).label('tag_name'), 
+            func.lower(Tag.name).label('tag'), 
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Tag.environments, Stream, Data).\
         filter(*dataTableFilters).\
-        group_by('tag_name').order_by('num_streams desc')
+        group_by('tag').order_by('num_streams desc')
 
-    writeRankingCsv(query, os.path.join(args.outdir, "environment_tags.txt"), column='tag_name', title='tag')
+    writeRankingCsv(query, os.path.join(args.outdir, "environment_tags.txt"), labelColumns='tag')
 
     # ===============
     # = Stream Tags =
@@ -388,14 +399,14 @@ if __name__ == "__main__":
     # Tag frequency for streams
 
     query = session.query(
-            func.lower(Tag.name).label('tag_name'), 
+            func.lower(Tag.name).label('tag'), 
             func.count(Stream.id.distinct()).label('num_streams'),
             func.count(Data.id.distinct()).label('num_measures'),
         ).join(Tag.streams, Environment, Data).\
         filter(*dataTableFilters).\
-        group_by('tag_name').order_by('num_streams desc')
+        group_by('tag').order_by('num_streams desc')
 
-    writeRankingCsv(query, os.path.join(args.outdir, "stream_tags.txt"), column='tag_name', title='tag')
+    writeRankingCsv(query, os.path.join(args.outdir, "stream_tags.txt"), labelColumns='tag')
 
     # =========
     # = Units =
@@ -411,7 +422,7 @@ if __name__ == "__main__":
         filter(*dataTableFilters).\
         group_by('unit').order_by('num_streams desc')
 
-    writeRankingCsv(query, os.path.join(args.outdir, "units.txt"), column='unit')
+    writeRankingCsv(query, os.path.join(args.outdir, "units.txt"), labelColumns='unit')
 
     # ===============
     # = Coordinates =
@@ -428,7 +439,7 @@ if __name__ == "__main__":
         filter(*dataTableFilters).\
         group_by('latitude', 'longitude').order_by('num_streams desc')
 
-    writeRankingCsv(query, os.path.join(args.outdir, "coordinates.txt"), column=['latitude', 'longitude'])
+    writeRankingCsv(query, os.path.join(args.outdir, "coordinates.txt"), labelColumns=['latitude', 'longitude'])
 
     # ============
     # = Location =
@@ -444,7 +455,7 @@ if __name__ == "__main__":
         filter(*dataTableFilters).\
         group_by('location').order_by('num_streams desc')
 
-    writeRankingCsv(query, os.path.join(args.outdir, "locations.txt"), column='location')
+    writeRankingCsv(query, os.path.join(args.outdir, "locations.txt"), labelColumns='location')
 
     # ==========
     # = Domain =
@@ -460,7 +471,7 @@ if __name__ == "__main__":
         filter(*dataTableFilters).\
         group_by('location_domain').order_by('num_streams desc')
 
-    writeRankingCsv(query, os.path.join(args.outdir, "location_domains.txt"), column='location_domain')
+    writeRankingCsv(query, os.path.join(args.outdir, "location_domains.txt"), labelColumns='location_domain')
 
     # ============
     # = Exposure =
@@ -476,7 +487,7 @@ if __name__ == "__main__":
         filter(*dataTableFilters).\
         group_by('location_exposure').order_by('num_streams desc')
 
-    writeRankingCsv(query, os.path.join(args.outdir, "location_exposures.txt"), column='location_exposure')
+    writeRankingCsv(query, os.path.join(args.outdir, "location_exposures.txt"), labelColumns='location_exposure')
 
     # ===============
     # = Disposition =
@@ -492,4 +503,4 @@ if __name__ == "__main__":
         filter(*dataTableFilters).\
         group_by('location_disposition').order_by('num_streams desc')
 
-    writeRankingCsv(query, os.path.join(args.outdir, "location_dispositions.txt"), column='location_disposition')
+    writeRankingCsv(query, os.path.join(args.outdir, "location_dispositions.txt"), labelColumns='location_disposition')

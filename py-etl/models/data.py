@@ -33,7 +33,12 @@ class Data(Base):
     
     stream = relationship("Stream")
     
-    Index('idx_data_updated', 'updated', unique=False)
+    # Index('idx_data_updated', 'updated', unique=False)
+    Index('idx_data_updated_streamid', 'updated', 'streamid', unique=False)
+        # This more selective index avoids a two-pass index+table scan for queries that:
+        # - have a constraint on "updated"
+        # - select the "streamid" column, but not the "value" column.
+        # Such queries are typically used to select "active" datastreams in a particular period.
 
     def __init__(self, stream, updated, value):
         self.stream = stream
