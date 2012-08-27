@@ -5,7 +5,7 @@ bin=`cd "${bin}"; pwd`
 APP_HOME=`cd "${bin}"; pwd`
 
 #rootdir="${APP_HOME}/data"
-rootdir=~/Documents/projects/cosm/data/groups/2012-08-14
+rootdir=~/cosm/data/groups/2012-08-14
 
 export SETTINGS_FILE="${APP_HOME}/config/development.cfg"
 app="${APP_HOME}/env/bin/python export_group_summary.py"
@@ -23,7 +23,8 @@ do
 		date="2011-08-${d}"
 		fromdate="${date}T${h}:00:00"
 		# todate="${date}T03:00:00"
-		todate=`date -j -f "%Y-%m-%dT%H:%M:%S" -v +3H ${fromdate} +"%Y-%m-%dT%H:%M:%S"`
+		#todate=`date -j -f "%Y-%m-%dT%H:%M:%S" -v +3H ${fromdate} +"%Y-%m-%dT%H:%M:%S"`
+		todate=`date -u --date "${date} ${h} + 3 hour" +"%Y-%m-%dT%H:%M:%S"`
 		echo "${fromdate} - ${todate}"
 		${app} ${fromdate} ${todate} ${rootdir}/uk-all/${fromdate}-${todate} --latitude="${lat}" --longitude="${lon}" || exit 1
 		${app} ${fromdate} ${todate} ${rootdir}/uk-temperature-units/outdoor/${fromdate}-${todate} -e outdoor -u "${units}" --latitude="${lat}" --longitude="${lon}" || exit 1
