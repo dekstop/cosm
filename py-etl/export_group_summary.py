@@ -94,6 +94,10 @@ if __name__ == "__main__":
 
     parser.add_argument('--raw-data', action="store_true", dest='rawdata', 
         help='include raw sensor data in the export')
+    parser.add_argument('--only-timeseries', action="store_true", dest='onlyTimeseries', 
+        help='only export timeseries data sets, not e.g. category breakdowns')
+    parser.add_argument('--only-latlon', action="store_true", dest='onlyLatlon', 
+        help='only export lat/lon data sets')
 
     args = parser.parse_args()
     
@@ -152,7 +156,7 @@ if __name__ == "__main__":
         longitude = [Decimal(x) for x in args.longitude.split(',')]
         longitude.sort()
     
-    #getDb().echo = True
+    # getDb().echo = True
     session = getSession()
 
     # ================
@@ -235,7 +239,7 @@ if __name__ == "__main__":
     # = Sensor Data = 
     # ===============
     
-    if (args.rawdata==True):
+    if (args.onlyLatlon!=True and args.rawdata==True):
     
         query = session.query(
                 Stream.id.label('streamid'),
@@ -265,110 +269,144 @@ if __name__ == "__main__":
     # = Aggregation Data = 
     # ====================
 
-    query = select([
-            DataDays.date.label('day'), 
-            Stream.id.label('streamid'),
-            DataDays.count.label('count'),
-            DataDays.min.label('min'),
-            DataDays.max.label('max'),
-            DataDays.mean.label('mean'),
-            DataDays.median.label('median'),
-            DataDays.sd.label('sd')
-        ], 
-	#from_obj = [DataDays.__table__, Stream.__table__, Environment.__table__], # next time raw SQL is king.
-        whereclause = and_(
-            Stream.id == DataDays.streamid,
-            Environment.id == Stream.envid,
-            *aggregationTableFilters
-        ),
-        group_by = ['day, stream.id, count, min, max, mean, median, sd'], # Postgres wants all these, despite the unique constraint
-        order_by = ['day, stream.id'],
-        bind=getDb())
-        
-    result = session.connection().execute(query).fetchall()
+    if (args.onlyLatlon!=True):
 
-    with open(os.path.join(args.outdir, "data_stream_days.txt"), 'w') as of:
-        writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
-        writer.writerow(['date', 'streamid', 'count', 'min', 'max', 'mean', 'median', 'sd'])
+        query = select([
+                DataDays.date.label('day'), 
+                Stream.id.label('streamid'),
+                DataDays.count.label('count'),
+                DataDays.min.label('min'),
+                DataDays.max.label('max'),
+                DataDays.mean.label('mean'),
+                DataDays.median.label('median'),
+                DataDays.sd.label('sd')
+            ], 
+    	#from_obj = [DataDays.__table__, Stream.__table__, Environment.__table__], # next time raw SQL is king.
+            whereclause = and_(
+                Stream.id == DataDays.streamid,
+                Environment.id == Stream.envid,
+                *aggregationTableFilters
+            ),
+            group_by = ['day, stream.id, count, min, max, mean, median, sd'], # Postgres wants all these, despite the unique constraint
+            order_by = ['day, stream.id'],
+            bind=getDb())
+        
+        result = session.connection().execute(query).fetchall()
+
+        with open(os.path.join(args.outdir, "data_stream_days.txt"), 'w') as of:
+            writer = csv.writer(of, delimiter='	', quoting=csv.QUOTE_NONE, quotechar='')
+            writer.writerow(['date', 'streamid', 'count', 'min', 'max', 'mean', 'median', 'sd'])
     
-        for rec in result:
-            writer.writerow([ # .encode('utf-8')
-                str(rec.day),
-                str(rec.streamid),
-                str(rec.count),
-                str(rec.min),
-                str(rec.max),
-                str(rec.mean),
-                str(rec.median),
-                str(rec.sd)
-            ])
+            for rec in result:
+                writer.writerow([ # .encode('utf-8')
+                    str(rec.day),
+                    str(rec.streamid),
+                    str(rec.count),
+                    str(rec.min),
+                    str(rec.max),
+                    str(rec.mean),
+                    str(rec.median),
+                    str(rec.sd)
+                ])
  
     # ===============
     # = Daily Count = 
     # ===============
     
-    # query = session.query(
-    #         Data.__table__, 
-    #         ToDay(Data.updated).label('day'), 
-    #         func.count(Stream.id.distinct()).label('num_streams'),
-    #         func.count(Data.id.distinct()).label('num_measures'),
-    #     ).join(Stream, Environment).\
-    #     filter(*dataTableFilters).\
-    #     group_by('day').order_by('day')
+    if (args.onlyLatlon!=True):
 
-    query = select([
-            ToDay(Data.updated).label('day'), 
-            func.count(Stream.id.distinct()).label('num_streams'),
-            func.count(Data.id.distinct()).label('num_measures'),
-            func.min(Data.value).label('min'), 
-            func.max(Data.value).label('max'), 
-            func.avg(Data.value).label('mean'), 
-            # func.median(Data.value).label('median'), 
-            # func.stddev(Data.value).label('sd')
-        ], 
-        whereclause = and_(
-            Stream.id == Data.streamid,
-            Environment.id == Stream.envid,
-            *dataTableFilters
-        ),
-        group_by = 'day',
-        order_by = 'day',
-        bind=getDb())
+        # query = session.query(
+        #         Data.__table__, 
+        #         ToDay(Data.updated).label('day'), 
+        #         func.count(Stream.id.distinct()).label('num_streams'),
+        #         func.count(Data.id.distinct()).label('num_measures'),
+        #     ).join(Stream, Environment).\
+        #     filter(*dataTableFilters).\
+        #     group_by('day').order_by('day')
 
-    result = session.connection().execute(query).fetchall()
+        query = select([
+                ToDay(Data.updated).label('day'), 
+                func.count(Stream.id.distinct()).label('num_streams'),
+                func.count(Data.id.distinct()).label('num_measures'),
+                func.min(Data.value).label('min'), 
+                func.max(Data.value).label('max'), 
+                func.avg(Data.value).label('mean'), 
+                # func.median(Data.value).label('median'), 
+                # func.stddev(Data.value).label('sd')
+            ], 
+            whereclause = and_(
+                Stream.id == Data.streamid,
+                Environment.id == Stream.envid,
+                *dataTableFilters
+            ),
+            group_by = 'day',
+            order_by = 'day',
+            bind=getDb())
+
+        result = session.connection().execute(query).fetchall()
     
-    writeRankingCsv(result, os.path.join(args.outdir, "data_days.txt"), column='day')
+        writeRankingCsv(result, os.path.join(args.outdir, "data_days.txt"), column='day')
     
     # ================
     # = Hourly Count = 
     # ================
     
-    # query = session.query(
-    #         Data.__table__, 
-    #         ToHour(Data.updated).label('hour'), 
-    #         func.count(Stream.id.distinct()).label('num_streams'),
-    #         func.count(Data.id.distinct()).label('num_measures'),
-    #     ).join(Stream, Environment).\
-    #     filter(*dataTableFilters).\
-    #     group_by('hour').order_by('hour')
+    if (args.onlyLatlon!=True):
+
+        # query = session.query(
+        #         Data.__table__, 
+        #         ToHour(Data.updated).label('hour'), 
+        #         func.count(Stream.id.distinct()).label('num_streams'),
+        #         func.count(Data.id.distinct()).label('num_measures'),
+        #     ).join(Stream, Environment).\
+        #     filter(*dataTableFilters).\
+        #     group_by('hour').order_by('hour')
     
-    query = select([
-            ToHour(Data.updated).label('hour'), 
-            func.count(Stream.id.distinct()).label('num_streams'),
-            func.count(Data.id.distinct()).label('num_measures'),
-        ], 
-        whereclause = and_(
-            Stream.id == Data.streamid,
-            Environment.id == Stream.envid,
-            *dataTableFilters
-        ),
-        group_by = 'hour',
-        order_by = 'hour',
-        bind=getDb())
+        query = select([
+                ToHour(Data.updated).label('hour'), 
+                func.count(Stream.id.distinct()).label('num_streams'),
+                func.count(Data.id.distinct()).label('num_measures'),
+            ], 
+            whereclause = and_(
+                Stream.id == Data.streamid,
+                Environment.id == Stream.envid,
+                *dataTableFilters
+            ),
+            group_by = 'hour',
+            order_by = 'hour',
+            bind=getDb())
 
-    result = session.connection().execute(query).fetchall()
+        result = session.connection().execute(query).fetchall()
 
-    writeRankingCsv(result, os.path.join(args.outdir, "data_hours.txt"), column='hour')
+        writeRankingCsv(result, os.path.join(args.outdir, "data_hours.txt"), column='hour')
+
+    # ===============
+    # = Coordinates =
+    # ===============
+    
+    # Ranking of geo-coordinates for streams
+    if (args.onlyTimeseries!=True):
+
+        query = session.query(
+                Environment.latitude.label('latitude'), 
+                Environment.longitude.label('longitude'), 
+                func.count(Stream.id.distinct()).label('num_streams'),
+                func.count(Data.id.distinct()).label('num_measures'),
+            ).join(Stream, Data).\
+            filter(*dataTableFilters).\
+            group_by('latitude', 'longitude').order_by('num_streams desc')
+
+        writeRankingCsv(query, os.path.join(args.outdir, "coordinates.txt"), column=['latitude', 'longitude'])
+
+    # ==============
+    # = Checkpoint =
+    # ==============
+
+    if (args.onlyTimeseries):
+        sys.exit(0)
+
+    if (args.onlyLatlon):
+        sys.exit(0)
 
     # ====================
     # = Environment Tags =
@@ -417,23 +455,6 @@ if __name__ == "__main__":
         group_by('unit').order_by('num_streams desc')
 
     writeRankingCsv(query, os.path.join(args.outdir, "units.txt"), column='unit')
-
-    # ===============
-    # = Coordinates =
-    # ===============
-    
-    # Ranking of geo-coordinates for streams
-
-    query = session.query(
-            Environment.latitude.label('latitude'), 
-            Environment.longitude.label('longitude'), 
-            func.count(Stream.id.distinct()).label('num_streams'),
-            func.count(Data.id.distinct()).label('num_measures'),
-        ).join(Stream, Data).\
-        filter(*dataTableFilters).\
-        group_by('latitude', 'longitude').order_by('num_streams desc')
-
-    writeRankingCsv(query, os.path.join(args.outdir, "coordinates.txt"), column=['latitude', 'longitude'])
 
     # ============
     # = Location =
