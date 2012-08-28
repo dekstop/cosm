@@ -14,5 +14,5 @@ do
   echo $infile
   name=`basename "${infile}" .txt`
   outfile="${outdir}/${name}-${tag}.pdf"
-  ${APP_HOME}/bin/python ${APP_HOME}/plot-volume.py "${infile}" ${colidx} "${outfile}" $@ || exit 1
+  ${APP_HOME}/bin/python ${APP_HOME}/plot-numeric-volume.py "${infile}" ${colidx} "${outfile}" $@ || exit 1
 done
