@@ -2,13 +2,13 @@
 #
 # TODO:
 # - use formatNumber from plot-variance.py
+#
 # Martin Dittus, 2012
 # 
 
 import argparse
 from collections import defaultdict
 import csv
-import math
 import os.path
 import sys
 
@@ -20,7 +20,6 @@ matplotlib.use('PDF')
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
-from pylab import randn, sin
 
 # =========
 # = Tools =
@@ -29,28 +28,6 @@ from pylab import randn, sin
 # For filtering
 def isValue(v):
     return (v is not None) and (np.isnan(v)==False)
-
-# remove all "None"s
-def onlyValues(values):
-    return filter(isValue, values)
-
-# p is [0..1]
-def percentile(data, p, limit=()):
-    values = sorted(onlyValues(data))
-    if (len(values)==0):
-        return float('nan')
-    if (len(values)==1):
-        return data[0]
-    if limit:
-        values = [min(max(value, limit[0]), limit[1]) for value in values]
-
-    idx = p * (len(values) - 1)
-    if (idx % 1 == 0):
-        return values[0]
-    else:
-        a = values[int(idx)]
-        b = values[int(idx) + 1]
-        return a + (b - a) * (idx % 1)
 
 # ========
 # = Main =
@@ -146,9 +123,9 @@ if __name__ == "__main__":
 
     if noData==False:
         plt.bar(range(numpoints), withValues, 
-        color='#666666', linewidth=0)
+            color='#666666', linewidth=0)
 
-    plt.text(width, wvHeight * 0.1, numWithValues, 
+    plt.text(textpos, wvHeight * 0.1, numWithValues, 
         size=args.fontsize, color='#666666', 
         horizontalalignment='right', verticalalignment='bottom')
 
@@ -162,9 +139,9 @@ if __name__ == "__main__":
 
     if noData==False:
         plt.bar(range(numpoints), withoutValues, 
-        color='#cccccc', linewidth=0)
+            color='#cccccc', linewidth=0)
 
-    plt.text(width, wovHeight * 0.1, numWithoutValues, 
+    plt.text(textpos, wovHeight * 0.1, numWithoutValues, 
         size=args.fontsize * 0.8, color='#cccccc', 
         horizontalalignment='right', verticalalignment='top')
 

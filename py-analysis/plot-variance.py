@@ -27,7 +27,6 @@ matplotlib.use('PDF')
 # matplotlib.use('macosx')
 
 import matplotlib.pyplot as plt
-from pylab import randn, sin
 
 # =========
 # = Tools =
@@ -156,7 +155,6 @@ def formatLabel(v):
 # ========
 
 if __name__ == "__main__":
-    from decimal import Decimal
     
     defaultWidth = 2
     defaultHeight = 0.4
