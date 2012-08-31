@@ -84,8 +84,8 @@ if __name__ == "__main__":
 
     # graph dimensions
     numpoints = len(data.values())
-    width = numpoints * 1.3
-    textpos = numpoints
+    width = numpoints * 1.5
+    textpos = numpoints * 1.03
 
     # Graph
     figsize = (args.width, args.height)

@@ -3,6 +3,12 @@
 APP_HOME=`dirname "$0"`
 APP_HOME=`cd "${APP_HOME}"; pwd`
 
+if [ $# -lt 4 ]
+then
+  echo "Usage: `basename $0` <indir> <outdir> <colidx> <tag> [args]"
+  exit 1
+fi
+
 indir="$1"
 outdir="$2"
 colidx="$3"

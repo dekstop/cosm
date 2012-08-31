@@ -159,7 +159,7 @@ if __name__ == "__main__":
     defaultWidth = 2
     defaultHeight = 0.4
     defaultDpi = 80
-    defaultFontsize = 6
+    defaultFontsize = 8
         
     parser = argparse.ArgumentParser(description='Create a timeseries plot for multiple data streams.')
     parser.add_argument('filename', help='TSV file of (group, date, item, val1, val2, ...)')
@@ -210,6 +210,8 @@ if __name__ == "__main__":
         x = [data[item][date] for date in dates]
         timeseries.append(x)
 
+    noData = (len(onlyValues([x for sublist in timeseries for x in sublist]))==0)
+
     # summary stats: sd, mean, coefficient of variation
     sdeviations = [np.std(onlyValues(values)) for values in zip(*timeseries)]
     means = [np.mean(onlyValues(values)) for values in zip(*timeseries)]
@@ -219,13 +221,15 @@ if __name__ == "__main__":
     meanval = np.mean(means)
     # medianval = np.median(means)
 
+    meancov = None
     # variances = [np.var(onlyValues(values)) for values in zip(*timeseries)]
-    meansd = np.mean(sdeviations)
-    meancov = np.mean(covs)
-    mincov = min(covs)
-    mincovpos = covs.index(mincov)
-    maxcov = max(covs)
-    maxcovpos = covs.index(maxcov)
+    if noData==False:
+        meansd = np.mean(sdeviations)
+        meancov = np.mean(covs)
+        mincov = min(covs)
+        mincovpos = covs.index(mincov)
+        maxcov = max(covs)
+        maxcovpos = covs.index(maxcov)
     
     # Graph
     figsize = (args.width, args.height)
@@ -236,8 +240,6 @@ if __name__ == "__main__":
     ax1.axes.get_yaxis().set_visible(False)
 
     # graph dimensions
-    # values = 
-    noData = (len(onlyValues([x for sublist in timeseries for x in sublist]))==0)
     if noData:
         lower = 0
         higher = 0
@@ -258,7 +260,7 @@ if __name__ == "__main__":
     # height = maxval - minval
     height = higher - lower
     ymargin = height * 0.2
-    textpos = numpoints * 1.3
+    textpos = numpoints * 1.03
     textVOffset = - height * 0.15
 
     ax1.axes.set_xlim(0, width)
@@ -273,31 +275,32 @@ if __name__ == "__main__":
             # plt.plot([0] * len(allDates), marker='x', color='#999999', linewidth=0.5)
             pass
         else:
-            plt.plot(ts, color='#999999', alpha=0.3, linewidth=0.2)
+            plt.plot(ts, color='#cccccc', alpha=0.5, linewidth=0.2)
     if noData==False:
         plt.plot(means, color='#333333', linewidth=0.5)
 
     # Labels
-    plt.text(width, higher + textVOffset, len(timeseries), 
+    plt.text(textpos, higher + textVOffset, len(timeseries), 
         size=args.fontsize, color='#999999', 
-        horizontalalignment='right', verticalalignment='bottom')
+        horizontalalignment='left', verticalalignment='bottom')
     if noData==False:
-        plt.text(width, (lower+higher)/2 + textVOffset, formatLabel(meanval), 
+        plt.text(textpos, (lower+higher)/2 + textVOffset, formatLabel(meanval), 
             size=args.fontsize, color='#999999', 
-            horizontalalignment='right', verticalalignment='bottom')
-    plt.text(width, lower + textVOffset, formatLabel(meancov), 
+            horizontalalignment='left', verticalalignment='bottom')
+    plt.text(textpos, lower + textVOffset, formatLabel(meancov), 
         size=args.fontsize, color='#333333', 
-        horizontalalignment='right', verticalalignment='bottom')
+        horizontalalignment='left', verticalalignment='bottom')
 
     # Dots
-    if isValue(maxcov):
-        plt.plot([maxcovpos], [higher + ymargin], '.', 
-            color='#ff6666', alpha=1, 
-            markeredgewidth=10000, clip_on=False)
-    if isValue(mincov):
-        plt.plot([mincovpos], [lower - ymargin], '.', 
-            color='#6666ff', alpha=1, 
-            markeredgewidth=100000, clip_on=False)
+    if noData==False:
+        if isValue(maxcov):
+            plt.plot([maxcovpos], [higher + ymargin], '.', 
+                color='#ff6666', alpha=1, 
+                markeredgewidth=10000, clip_on=False)
+        if isValue(mincov):
+            plt.plot([mincovpos], [lower - ymargin], '.', 
+                color='#6666ff', alpha=1, 
+                markeredgewidth=100000, clip_on=False)
 
     # Done.
     plt.savefig(args.outfilename, bbox_inches='tight')

@@ -100,17 +100,22 @@ if __name__ == "__main__":
     print "%d with value, %d without, and %d dates" % (sum(withValues), sum(withoutValues), len(allDates))
 
     # graph dimensions
-    numpoints = len(withValues)
     noData = (numWithValues==0 and numWithoutValues==0)
-    width = numpoints * 1.3
-    textpos = numpoints * 1.3
-    wvHeight = max(withValues)
-    wovHeight = max(withoutValues)
+    if noData:
+        numpoints = 1
+        wvHeight = 1
+        wovHeight = 1
+    else:
+        numpoints = len(withValues)
+        wvHeight = max(withValues)
+        wovHeight = max(withoutValues)
+    width = numpoints * 1.5
+    textpos = numpoints * 1.03
 
     # Graph
     figsize = (args.width, args.height)
     fig = plt.figure(figsize=figsize, dpi=args.dpi)
-    fig.subplots_adjust(wspace=0, hspace=0.1)
+    fig.subplots_adjust(wspace=0, hspace=0.2)
     gs = gridspec.GridSpec(3, 1)
 
     # Plot 1
@@ -125,9 +130,9 @@ if __name__ == "__main__":
         plt.bar(range(numpoints), withValues, 
             color='#666666', linewidth=0)
 
-    plt.text(textpos, wvHeight * 0.1, numWithValues, 
+    plt.text(textpos, 0, numWithValues, 
         size=args.fontsize, color='#666666', 
-        horizontalalignment='right', verticalalignment='bottom')
+        horizontalalignment='left', verticalalignment='bottom')
 
     # Plot 2
     ax2 = plt.subplot(gs[-1, :]) # bottom 1/3rd
@@ -141,9 +146,9 @@ if __name__ == "__main__":
         plt.bar(range(numpoints), withoutValues, 
             color='#cccccc', linewidth=0)
 
-    plt.text(textpos, wovHeight * 0.1, numWithoutValues, 
+    plt.text(textpos, 0, numWithoutValues, 
         size=args.fontsize * 0.8, color='#cccccc', 
-        horizontalalignment='right', verticalalignment='top')
+        horizontalalignment='left', verticalalignment='top')
 
     # Done.
     plt.savefig(args.outfilename, bbox_inches='tight')

@@ -13,7 +13,10 @@
 #
 # TODO
 # - split into two scripts: compute tag similarity (run once per matrix), and synonym scores
-# - benchmark: fast row extraction/conversion to list
+# - optimisation: convert to dense matrix but make ID conversion mandatory
+#   - it's not really used as a sparse matrix -- we do compare every tax/(user|item|tag) combination
+#   - atm the main cost is conversion from matrix rows to numpy arrays
+#   - so: use a numpy array instead.
 # 
 
 import argparse
@@ -60,7 +63,7 @@ class HMatrix(lil_matrix):
     
     def reshape(self, shape):
         return HMatrix(super(HMatrix, self).reshape(shape))
-        
+    
 # =========
 # = Tools =
 # =========
@@ -88,36 +91,48 @@ class IdMapping:
     def __str__(self):
         return str(self.namesToId)
 
-# Reads TSV files of (item, tag, count) or (user, tag, count)
+# Reads TSV files of ([group,] item, tag, count) or ([group,] user, tag, count)
 # Returns a 2D sparse matrix of structure (tag, item) or (tag, user)
 # Expects that tag, item, and user identifiers are positive ints
 # If they're not: can optionally maintain translation tables and accept strings too.
-def readTagItemMatrix(filename, asStrings, amap=None, tagmap=None):
+def readTagItemMatrix(filename, asStrings, amap=None, tagmap=None, group=None):
     print "Loading", filename
     reader = csv.reader(open(filename, 'rb'), delimiter='	', quoting=csv.QUOTE_NONE)
-    m = HMatrix((2,2)) # optimised for row-based access
+    m = HMatrix((2300,2800)) # FIXME this large initial size is a hack -- see below
     
-    for a, tag, count in reader:
-        if (asStrings==True):
-            a = amap.getOrMakeId(a)
-            tag = tagmap.getOrMakeId(tag)
+    for rec in reader:
+        if group is None:
+            a, tag, count = rec
         else:
-            a = int(a)
-            tag = int(tag)
-        count = float(count)
+            samplegroup, a, tag, count = rec
+        if (group is None or samplegroup==group):
+            if (asStrings==True):
+                a = amap.getOrMakeId(a)
+                tag = tagmap.getOrMakeId(tag)
+            else:
+                a = int(a)
+                tag = int(tag)
+            count = float(count)
+            # print tag, a, count
 
-        # ensure matrix is big enough to contain all IDs
-        newShape = m.shape
-        while (tag>=newShape[0]):
-            newShape = (newShape[0]*2, newShape[1])
-        while (a>=newShape[1]):
-            newShape = (newShape[0], newShape[1]*2)
-        if (newShape != m.shape):
-            print "Resizing matrix to", newShape
-            m = m.reshape(newShape)
+            # ensure matrix is big enough to contain all IDs
+            newShape = m.shape
+            while (tag>=newShape[0]):
+                newShape = (newShape[0]*2, newShape[1])
+            while (a>=newShape[1]):
+                newShape = (newShape[0], newShape[1]*2)
+            if (newShape != m.shape):
+                # print "Resizing matrix to", newShape
+                # m = m.reshape(newShape)
+                # FIXME argh
+                raise "Cannot resize matrix to fit data -- lil_matrix may have a resizing bug"
 
-        m[tag,a] = count
+            m[tag,a] = count
+            # print m
+            # print '----'
     
+    # print m
+    # print m.nonzero()
     return m
 
 # ===========
@@ -143,6 +158,7 @@ def tagSimilarityScores(m):
     utags, uitems = m.nonzero() # only process tags that have been used
     utags = set(utags) # uniques
     for tag1 in utags:
+        # print tag1
     # for tag1 in xrange(m.shape[0]):
         tag1Items = m.getRow(tag1)
         # for tag2 in utags:
@@ -172,9 +188,11 @@ if __name__ == "__main__":
     defaultMaxUSim = 0.0
     
     parser = argparse.ArgumentParser(description='Compute a synonymity score for tags.')
-    parser.add_argument('utmfile', help='TSV file of (userid, tagid, number of items)')
-    parser.add_argument('itmfile', help='TSV file of (itemid, tagid, number of users)')
+    parser.add_argument('utmfile', help='TSV file of ([groupid,] userid, tagid, number of items)')
+    parser.add_argument('itmfile', help='TSV file of ([groupid,] itemid, tagid, number of users)')
     parser.add_argument('outfile', help='TSV file to store (tagid, tagid, score)')
+    parser.add_argument('-g', '--group', dest='group', action='store',
+        help='the groupid to match (only records with this ID will be loaded.)')
     parser.add_argument('--as-strings', dest='asStrings', action='store_true', 
         help='treat IDs as strings, not positive integers')
     parser.add_argument('-u', '--min-users-per-tag', dest='minUsersPerTag', type=int,
@@ -201,20 +219,18 @@ if __name__ == "__main__":
     if (os.path.isfile(args.itmfile)==False):
         print "File doesn't exist: %s" % (args.itmfile)
         sys.exit(1)
+    
+    if args.group:
+        print "Loading group:", args.group
 
     # Load
     if (args.asStrings):
-        utm = readTagItemMatrix(args.utmfile, args.asStrings, umap, tmap)
-        itm = readTagItemMatrix(args.itmfile, args.asStrings, imap, tmap)
-
-        # print "Mappings: "
-        # print umap
-        # print imap
-        # print tmap
-        # print "------"
+        utm = readTagItemMatrix(args.utmfile, args.asStrings, umap, tmap, group=args.group)
+        itm = readTagItemMatrix(args.itmfile, args.asStrings, imap, tmap, group=args.group)
+        print "%d unique tags, %d unique users, and %d unique items." % (tmap.counter, umap.counter, tmap.counter)
     else:
-        utm = readTagItemMatrix(args.utmfile, args.asStrings)
-        itm = readTagItemMatrix(args.itmfile, args.asStrings)
+        utm = readTagItemMatrix(args.utmfile, args.asStrings, group=args.group)
+        itm = readTagItemMatrix(args.itmfile, args.asStrings, group=args.group)
     
     # Apply thresholds
     print "Determining tags below threshold"
@@ -222,7 +238,7 @@ if __name__ == "__main__":
     lowITags = getRarelyUsedTags(itm, args.minItemsPerTag)
     lowTags = lowUTags.union(lowITags)
     
-    print "Removing %s tags below threshold" % (len(lowUTags))
+    print "Removing %s tags below threshold" % (len(lowTags))
     utm.removeRows(lowTags)
     itm.removeRows(lowTags)
     
@@ -235,8 +251,8 @@ if __name__ == "__main__":
     
     # Result
     print "Writing", args.outfile
-    writer = csv.writer(open(args.outfile, 'wb'), delimiter='\t', quoting=csv.QUOTE_NONE)
-    allwriter = csv.writer(open(args.outfile + ".all", 'wb'), delimiter='\t', quoting=csv.QUOTE_NONE)
+    writer = csv.writer(open(args.outfile, 'wb'), delimiter='\t', quoting=csv.QUOTE_NONE, quotechar='')
+    allwriter = csv.writer(open(args.outfile + ".all", 'wb'), delimiter='\t', quoting=csv.QUOTE_NONE, quotechar='')
 
     tags1, tags2 = usimilarity.nonzero()  # only existing (tag, tag) pairs
     for tag1, tag2 in zip(tags1, tags2):
