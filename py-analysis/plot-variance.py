@@ -23,10 +23,14 @@ import sys
 import numpy as np
 
 import matplotlib
+# matplotlib.use('MacOSX')
+# matplotlib.use('AGG')
 matplotlib.use('PDF')
+# ValueError: Unrecognized backend string "png": valid strings are ['ps', 'Qt4Agg', 'GTK', 'GTKAgg', 'svg', 'agg', 'cairo', 'MacOSX', 'GTKCairo', 'WXAgg', 'TkAgg', 'QtAgg', 'FltkAgg', 'pdf', 'CocoaAgg', 'emf', 'gdk', 'template', 'WX']
 # matplotlib.use('macosx')
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 # =========
 # = Tools =
@@ -158,11 +162,11 @@ if __name__ == "__main__":
     
     defaultWidth = 2
     defaultHeight = 0.4
-    defaultDpi = 80
+    defaultDpi = 10
     defaultFontsize = 8
         
     parser = argparse.ArgumentParser(description='Create a timeseries plot for multiple data streams.')
-    parser.add_argument('filename', help='TSV file of (group, date, item, val1, val2, ...)')
+    parser.add_argument('filename', help='TSV file of (date, item, val1, val2, ...)')
     parser.add_argument('validx', help='index of column to plot')
     parser.add_argument('outfilename', help='PDF filename')
     parser.add_argument('-w', '--width', dest='width', action='store', type=float, 
@@ -173,6 +177,13 @@ if __name__ == "__main__":
         default=defaultWidth, help='dpi')
     parser.add_argument('-f', '--font-size', dest='fontsize', action='store', type=float, 
         default=defaultFontsize, help='font size in points')
+
+    parser.add_argument('--with-header', action="store_true", dest='withHeader', 
+        help='skip first line')
+    
+    parser.add_argument('--plot-range', action="store_true", dest='plotRange', 
+        help='show y-axis ticks and labels')
+
     args = parser.parse_args()
     
     if (os.path.isfile(args.filename)==False):
@@ -183,11 +194,14 @@ if __name__ == "__main__":
     data = dict()
     allDates = set()
     reader = csv.reader(open(args.filename, 'rb'), delimiter='	', quoting=csv.QUOTE_NONE)
+    if args.withHeader:
+        # print "Skipping first line."
+        reader.next()
     for rec in reader:
-        item = rec[2]
-        date = rec[1]
+        item = rec[1]
+        date = rec[0]
         str = rec[int(args.validx)]
-        if (str==''):
+        if (str=='' or str=='None'):
             val = None
         else:
             try:
@@ -200,6 +214,10 @@ if __name__ == "__main__":
             data[item] = defaultdict(lambda: None)
         data[item][date] = val
         allDates.add(date)
+
+    if len(allDates)==0:
+        print "No data in file."
+        sys.exit()
 
     print "%d data streams and %d dates" % (len(data.keys()), len(allDates))
 
@@ -234,10 +252,16 @@ if __name__ == "__main__":
     # Graph
     figsize = (args.width, args.height)
     fig = plt.figure(figsize=figsize, dpi=args.dpi)
+    # fig.set_facecolor("#ffffff")
     ax1 = plt.axes(frameon=False)
 
     ax1.axes.get_xaxis().set_visible(False)
-    ax1.axes.get_yaxis().set_visible(False)
+    if args.plotRange:
+        ax1.axes.get_yaxis().set_major_locator(MaxNLocator(4)) # set bins for ticks
+        ax1.tick_params(axis='y', direction='out') # ticks are facing outwards
+        ax1.yaxis.tick_left() # don't plot right-hand ticks
+    else:
+        ax1.axes.get_yaxis().set_visible(False)
 
     # graph dimensions
     if noData:
@@ -301,6 +325,17 @@ if __name__ == "__main__":
             plt.plot([mincovpos], [lower - ymargin], '.', 
                 color='#6666ff', alpha=1, 
                 markeredgewidth=100000, clip_on=False)
+
+    # Adjust axes
+    if args.plotRange:
+        for label in ax1.axes.get_yticklabels(): 
+            label.set_fontsize(args.fontsize/2.0)
+            label.set_color('#cccccc')
+        for line in ax1.axes.get_yticklines(): 
+            line.set_color('#cccccc')
+        
+    # ax1.axes.get_yaxis().label.set_size(args.fontsize/2.0)
+    
 
     # Done.
     plt.savefig(args.outfilename, bbox_inches='tight')

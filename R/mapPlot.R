@@ -20,23 +20,22 @@ library(gridExtra)
 
 gpclibPermit()
 
-stratify <- function(data, gridSize, latOffset=0, lonOffset=0) {
+stratify <- function(data, latGridSize, lonGridSize=latGridSize, latOffset=0, lonOffset=0) {
   transform(data, 
-    Lon = (Lon - lonOffset) - ((Lon - lonOffset) %% gridSize) + lonOffset, 
-    Lat = (Lat - latOffset) - ((Lat - latOffset) %% gridSize) + latOffset)
+    Lon = (Lon - lonOffset) - ((Lon - lonOffset) %% lonGridSize) + lonOffset + lonGridSize/2, 
+    Lat = (Lat - latOffset) - ((Lat - latOffset) %% latGridSize) + latOffset + latGridSize/2)
 }
 
-stratified_hist <- function(data_stratified) {
-  h = aggregate(
-    data.frame(Lat=data_stratified$Lat, Lon=data_stratified$Lon), 
-    list(SLat=data_stratified$Lat, SLon=data_stratified$Lon), 
-    length)
-  data.frame(Lat=h$SLat, Lon=h$SLon, Count=h$Lat)
+aggregateByLatLon <- function(data_stratified, FUN=length) {
+  aggregate(
+      x=data.frame(Count=data_stratified$Count), 
+      by=list(Lat=data_stratified$Lat, Lon=data_stratified$Lon), 
+      FUN=FUN)
 }
 
-basemap <- function(world) {
+basemap <- function(world, size=0.2, fill=I('#ffffff'), col=I('#cccccc')) {
   ggplot(world, aes(long, lat, group=group)) + 
-    geom_polygon(size=0.2, fill=I('#ffffff'), col=I('#bbbbbb')) +
+    geom_polygon(size=size, fill=fill, col=col) +
     coord_equal() + 
     # opts(aspect.ratio = 1) + 
     opts(panel.background = theme_blank(), 
@@ -49,22 +48,23 @@ selectRecordsForTag <- function(tagStr, d, tagCol="ALL_TAGS") {
   d[grep(tagStr, d[,tagCol], ignore.case=TRUE),]
 }
 
-stratifyLatLon <- function(d, gridSize=0.02, latOffset=0, lonOffset=0) {
-  mapdata <- subset(d, !is.na(LAT))
-  mapdata$Lat <- mapdata$LAT
-  mapdata$Lon <- mapdata$LON
-  stratified_hist(stratify(mapdata, gridSize, latOffset, lonOffset))
+stratifyLatLon <- function(d, latGridSize=0.02, lonGridSize=latGridSize, latOffset=0, lonOffset=0,FUN=length) {
+  mapdata <- subset(d, !is.na(Lat))
+  aggregateByLatLon(stratify(mapdata, latGridSize, lonGridSize, latOffset, lonOffset), FUN=FUN)
 }
 
-mapPlot <- function(mapdata, basemap, title) {
-  mapdata <<- mapdata # making it global to address a variable scoping bug below
-  
-  basemap + 
-    geom_point(data=mapdata, aes(group=1, x=mapdata$Lon, y=mapdata$Lat, cex=mapdata$Count), col='#ff0000', alpha=0.5, type='p', pch=19) +
-    scale_size(range=c(0.3,4), name="Sensors") +
-    coord_map(project="mercator", xlim=c(-170,170), ylim=c(-55,70)) +
-    opts(title=title)
-    # coord_cartesian(xlim=c(min(mapdata$Lon), max(mapdata$Lon)), ylim=c(min(mapdata$Lat), max(mapdata$Lat)))
+mapPlot <- function(mapPlotData, basemap, xlim=c(-170,170), ylim=c(-56,75), title=NA, units="Datastreams", col='#ff0000', alpha=0.5, scale_range=c(0.3,4), projection="mercator", legend.position="none") {
+  mapPlotData <<- mapPlotData # making it global to address a variable scoping bug below
+
+  m <- basemap + 
+    geom_point(data=mapPlotData, aes(group=1, x=mapPlotData$Lon, y=mapPlotData$Lat, cex=mapPlotData$Count), col=col, alpha=alpha, type='p', pch=19) +
+    scale_area(range=scale_range, name=units) + 
+    opts(legend.position=legend.position, panel.margin=unit(0 , "cm"), plot.margin=unit(c(0,0,-1,-1), "lines")) +
+    coord_map(project=projection, xlim=xlim, ylim=ylim)
+    if (!is.na(title)) {
+      m <- m + opts(title=title)
+    }
+    m
 }
   
 savePdf <- function(p, pdfFilename, width, height) {

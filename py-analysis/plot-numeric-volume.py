@@ -1,4 +1,4 @@
-# Sparkline plots to visually show data volume in a group of time series data streams.
+# Sparkline plots to visually show data volume of time series data streams.
 #
 # TODO:
 # - use formatNumber from plot-variance.py
@@ -37,11 +37,11 @@ if __name__ == "__main__":
     
     defaultWidth = 2
     defaultHeight = 0.4
-    defaultDpi = 80
+    defaultDpi = 600
     defaultFontsize = 8
         
     parser = argparse.ArgumentParser(description='Create a timeseries plot for multiple data streams.')
-    parser.add_argument('filename', help='TSV file of (group, date, item, val1, val2, ...)')
+    parser.add_argument('filename', help='TSV file of (date, item, val1, val2, ...)')
     parser.add_argument('validx', help='index of column to plot')
     parser.add_argument('outfilename', help='PDF filename')
     parser.add_argument('-w', '--width', dest='width', action='store', type=float, 
@@ -52,6 +52,10 @@ if __name__ == "__main__":
         default=defaultWidth, help='dpi')
     parser.add_argument('-f', '--font-size', dest='fontsize', action='store', type=float, 
         default=defaultFontsize, help='font size in points')
+
+    parser.add_argument('--with-header', action="store_true", dest='withHeader', 
+        help='skip first line')
+    
     args = parser.parse_args()
     
     if (os.path.isfile(args.filename)==False):
@@ -63,9 +67,12 @@ if __name__ == "__main__":
     nodata = defaultdict(lambda: dict())
     allDates = set()
     reader = csv.reader(open(args.filename, 'rb'), delimiter='	', quoting=csv.QUOTE_NONE)
+    if args.withHeader:
+        # print "Skipping first line."
+        reader.next()
     for rec in reader:
-        item = rec[2]
-        date = rec[1]
+        item = rec[1]
+        date = rec[0]
         str = rec[int(args.validx)]
         if (str==''):
             val = None
@@ -79,6 +86,10 @@ if __name__ == "__main__":
         else:
             nodata[date][item] = True
         allDates.add(date)
+
+    if len(allDates)==0:
+        print "No data in file."
+        sys.exit()
 
     # Prepare data
     dates = sorted(allDates)
@@ -96,6 +107,8 @@ if __name__ == "__main__":
 
     numWithValues = len(itemsWithValues)
     numWithoutValues = len(itemsWithoutValues)
+    maxWithValues = max(withValues)
+    maxWithoutValues = max(withoutValues)
 
     print "%d with value, %d without, and %d dates" % (sum(withValues), sum(withoutValues), len(allDates))
 
@@ -130,7 +143,7 @@ if __name__ == "__main__":
         plt.bar(range(numpoints), withValues, 
             color='#666666', linewidth=0)
 
-    plt.text(textpos, 0, numWithValues, 
+    plt.text(textpos, 0, maxWithValues, 
         size=args.fontsize, color='#666666', 
         horizontalalignment='left', verticalalignment='bottom')
 
@@ -146,7 +159,7 @@ if __name__ == "__main__":
         plt.bar(range(numpoints), withoutValues, 
             color='#cccccc', linewidth=0)
 
-    plt.text(textpos, 0, numWithoutValues, 
+    plt.text(textpos, 0, maxWithoutValues, 
         size=args.fontsize * 0.8, color='#cccccc', 
         horizontalalignment='left', verticalalignment='top')
 

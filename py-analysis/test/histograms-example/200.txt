@@ -1,0 +1,200 @@
+radiation	3866
+temperature	3050
+watts	2142
+unverified	1794
+verified	1794
+longitude	1599
+latitude	1596
+altitude	1516
+elevation	1508
+alt	1502
+lat	1309
+lon	1308
+electricity	1186
+power	1100
+Temperature	916
+trees	638
+degrees	551
+celsius	529
+humidity	412
+Humidity	391
+temp	353
+sensor:interval=Instantaneous	346
+Counts Per Minute	337
+Dosage Rate	337
+sensor:type=radiation	316
+Lat	293
+Lon	292
+coffee	281
+contentment	263
+psychogeography	263
+pounds	261
+lbs	261
+light	240
+Temp	239
+Light	239
+mood	228
+pollution	218
+test	213
+ozone	209
+air quality index	208
+dollars	204
+1時間移動平均	196
+greyness	191
+LDR	184
+sensor:instrument=Hydraprobe Analog (2.5 Volt)  - 1 Of 4	179
+energy	174
+PM2.5	170
+particulate	168
+light sensor	157
+light level	155
+null	148
+radiation sensor	146
+c02	145
+analogRead0	144
+air quality	139
+CO2_last_24_hrs	129
+CO2_last_60_mins	129
+CO2_last_15_mins	129
+Radiación gamma diaria media en el aire	126
+Air daily average gamma radiation	126
+status code	121
+Temperatura	119
+Power	115
+pbd:type=tix	115
+Pressure	112
+sensor:ecode=STO	111
+sensor:height=unknown	111
+Soil Temperature Observed	111
+temperatura	97
+analogRead1	89
+Voltage	88
+Proximity	87
+Gyroscope	87
+Accelerometer	87
+sensor:ecode=SMS	86
+1	86
+sensor:instrument=Hydraprobe Digital Sdi-12 (2.5 Volt)  - 1 Of 4	86
+Soil Moisture Percent	86
+Test	86
+tag2	86
+Energy	85
+Gravity	82
+skype	80
+Mood	80
+water	80
+sensor:model=lnd-712	79
+tag3	78
+speed	76
+Electricity	72
+Salinity	72
+voltage	71
+Orientation	67
+sensor:ecode=SAL	67
+Magnetic_Field	66
+Rotation_Vectors	65
+average	65
+Linear_Acceleration	65
+my tag 0	65
+Wind Speed	64
+Auto	64
+acceleration	64
+CC128	64
+fahrenheit	63
+sensor:height=-2"	62
+button	62
+sensor:instrument=Unknown - Linear Equation	62
+ped:device_usage	61
+Relative Humidity	60
+PM10	60
+relative humidity	60
+lightSensor	59
+air_quality	58
+natural_gas	58
+nf:lives	58
+sensor:height=-4"	57
+light value	57
+sensor:interval=1 Hour	54
+Arduino	53
+reference	53
+light dependent resistor	53
+urban sensing	52
+digitalRead2	50
+Wind Direction	50
+sensor:height=-8"	50
+photocell	49
+sensor:height=-20"	48
+pressure	48
+location	45
+weight	44
+Watts	44
+sensor:height=-40"	44
+button2	43
+TV	42
+projection	42
+Brightness	42
+Temperatur	41
+digitalRead5	41
+sensor:model=SBM-20	40
+gas	39
+wind	39
+battery	38
+WCJC	36
+Peace 206	36
+Black Hill	36
+DVB-T	36
+Electronics	36
+pbd:floor=5	36
+pbd:label=Lights	36
+pbd:label=SmallPower	36
+CO2	35
+black carbon	35
+Outside Temp	35
+pbd:floor=2	34
+pbd:floor=3	34
+pbd:floor=4	34
+RSSI	33
+-	33
+label	33
+Status	32
+Radiation dose rate	32
+test_tag	32
+Indoor	32
+volume	32
+Outside	32
+WS	31
+Air Temperature	31
+Battery Voltage	31
+destination	31
+DS18B20	31
+small power	30
+average speed	30
+Current	30
+last port	30
+Light Level	30
+nf:light level	30
+nf:power consumption	30
+nf:Relative Humidity	30
+Outdoor	30
+sox	29
+pm10	29
+stormwater	29
+greenhouse_gases	29
+voc	29
+current	29
+Wind	29
+demand	29
+wind speed	29
+bvoc	29
+analogRead2	29
+nox	29
+outdoor	29
+centigrade	29
+Warning Level	28
+PhonePosition	28
+１時間移動平均	28
+arduino	27
+Real Dielectric Constant	27
+10分間移動平均	27
+sensor:ecode=RDC	27
+nf:switch status	27

@@ -38,7 +38,33 @@ grepMultipleRankedValues <- function(strings, rankedStrings) {
   t
 }
 
-# Takes a list of strings and a data frame of Cosm feed data
+# Takes a list of values and a data frame of Cosm feed data. Only returns rows where the cell value matches perfecly.
+subsetMultiple <- function(df, valCol, values, ignore.case=FALSE) {
+  t <- c()
+  for (val in values) {
+    if (ignore.case==TRUE) {
+      t <- unique(c(t, which(tolower(df[,valCol])==tolower(val))))
+    } else {
+      t <- unique(c(t, which(df[,valCol]==val)))
+    }
+  }
+  df[t,]
+}
+
+# Takes a list of strings and a data frame of Cosm feed data.
+# Does perfect string matching on a tag column (an array of strings.)
+# Also works if cell values are nested arrays.
+subsetCosmTags <- function(df, valCol, values) {
+  t <- rep(FALSE, nrow(df))
+  for (val in values) {
+    t = t | unlist(lapply(df[,valCol], function(x){val %in% x}))
+  }
+  df[t,]
+}
+
+# Takes a list of strings and a data frame of Cosm feed data.
+# Does partial and case insensitive matching on cell values.
+# Also works if cell values are nested arrays.
 grepCosmTags <- function(tags, df, tagCol="ALL_TAGS") {
   # t <- df[0:0,]
   t <- c()

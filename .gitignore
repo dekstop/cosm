@@ -4,3 +4,12 @@ coverage/build/
 *.pyc
 py-etl/var/test.db
 py-etl/env
+py-analysis/bin/*
+py-analysis/build-bundle/*
+py-analysis/include/*
+py-analysis/lib/*
+py-analysis/share/*
+py-analysis/.Python
+py-analysis/build
+py-analysis/graphics/
+py-etl/var/*.db

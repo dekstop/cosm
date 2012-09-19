@@ -37,7 +37,7 @@ if __name__ == "__main__":
     
     defaultWidth = 2
     defaultHeight = 0.4
-    defaultDpi = 80
+    defaultDpi = 600
     defaultFontsize = 8
         
     parser = argparse.ArgumentParser(description='Create a bar chart for pre-aggregated data.')
@@ -52,6 +52,10 @@ if __name__ == "__main__":
         default=defaultWidth, help='dpi')
     parser.add_argument('-f', '--font-size', dest='fontsize', action='store', type=float, 
         default=defaultFontsize, help='font size in points')
+    
+    parser.add_argument('--with-header', action="store_true", dest='withHeader', 
+        help='skip first line')
+    
     args = parser.parse_args()
     
     if (os.path.isfile(args.filename)==False):
@@ -62,6 +66,9 @@ if __name__ == "__main__":
     data = defaultdict(lambda: dict())
     allDates = set()
     reader = csv.reader(open(args.filename, 'rb'), delimiter='	', quoting=csv.QUOTE_NONE)
+    if args.withHeader:
+        # print "Skipping first line."
+        reader.next()
     for rec in reader:
         date = rec[0]
         str = rec[int(args.validx)]
@@ -74,6 +81,10 @@ if __name__ == "__main__":
                 val = None
         data[date] = val
         allDates.add(date)
+    
+    if len(data.keys())==0:
+        print "No data in file."
+        sys.exit()
 
     # Prepare data
     dates = sorted(allDates)

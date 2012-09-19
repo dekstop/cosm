@@ -1,0 +1,1000 @@
+4	Temperature (air)	1
+5	Humidity	1
+6	temperature	1
+7	watts	1
+8	temperature	1
+9	temperature	1
+10	watts	1
+11	test	1
+12	air quality index	1
+12	pollution	1
+13	ozone	1
+14	PM2.5	1
+15	R3 Bottom	1
+16	R3 Middle	1
+17	R3 Top	1
+18	R3 Humidity	1
+19	R3 Back	1
+20	pH Level	1
+21	Water Level	1
+22	Temperature	1
+23	ORP	1
+24	ORP analog probe	1
+25	temperature	1
+26	watts	1
+27	temperature	1
+28	watts	1
+29		1
+30		1
+31	temperature	1
+32	consumption	1
+32	watts	1
+33	love	1
+34	river flow	1
+35	Austin	1
+35	Bastrop	1
+35	river flow	1
+36	latitude	1
+37	longitude	1
+38	altitude	1
+39		1
+40		1
+41		1
+42	speed	1
+43	air_pressure	1
+44	air_temperature	1
+45	chlorophyll	1
+46	current_speed	1
+47	current_to_direction	1
+48	eastward_current	1
+49	northward_current	1
+50	salinity	1
+51	water_temperature	1
+52	wind_from_direction	1
+53	wind_gust	1
+54	wind_speed	1
+55	range sensor	1
+56	number of persons	1
+57	solar wind speed km per sec	1
+58	solar wind density protons per cm3	1
+59	interplanetary mag field btotal nT	1
+60	interplanetary mag field bz nT	1
+61	pbd:floor=all	1
+61	pbd:zone=all	1
+61	pdb:id=Active energy	1
+61	pdb:label=ActiveEnergy	1
+62	pbd:floor=G	1
+62	pbd:zone=all	1
+62	pdb:id=AtriumSouth(temp)	1
+62	pdb:label=AtriumSouth(temp)	1
+63	pbd:floor=G	1
+63	pbd:zone=all	1
+63	pdb:id=MeetingRoomZunz(temp)	1
+63	pdb:label=MeetingRoomZunz(temp)	1
+64	pbd:floor=G	1
+64	pbd:zone=all	1
+64	pdb:id=OfficeKITGMiddleSouth(temp)	1
+64	pdb:label=OfficeKITGMiddleSouth(temp)	1
+65	pbd:floor=G	1
+65	pbd:zone=all	1
+65	pdb:id=OfficeODTWindow(temp)	1
+65	pdb:label=OfficeODTWindow(temp)	1
+66	pbd:floor=all	1
+66	pbd:zone=all	1
+66	pdb:id=Active power	1
+66	pdb:label=ActivePower	1
+67	pbd:floor=all	1
+67	pbd:zone=all	1
+67	pdb:id=Gas Meter	1
+67	pdb:label=GasMeter	1
+68	pbd:floor=all	1
+68	pbd:zone=all	1
+68	pdb:id=Water	1
+68	pdb:label=Water	1
+69	pbd:floor=all	1
+69	pbd:zone=all	1
+69	pdb:id=Outside Air Temperature	1
+69	pdb:label=OutsideAirTemperature	1
+70	pbd:floor=all	1
+70	pbd:zone=all	1
+70	pdb:id=Outside Humidity	1
+70	pdb:label=OutsideHumidity	1
+71	pbd:floor=G	1
+71	pbd:zone=all	1
+71	pdb:id=EntryFII(temp)	1
+71	pdb:label=EntryFII(temp)	1
+72	pbd:floor=G	1
+72	pbd:zone=all	1
+72	pdb:id=Reception(temp)	1
+72	pdb:label=Reception(temp)	1
+73	pbd:floor=G	1
+73	pbd:zone=all	1
+73	pdb:id=OfficeFIIMiddleAtrium(temp)	1
+73	pdb:label=OfficeFIIMiddleAtrium(temp)	1
+74	temperature	1
+75	channel1	1
+75	electricity	1
+75	power	1
+76	channel2	1
+76	electricity	1
+76	power	1
+77	channel3	1
+77	electricity	1
+77	power	1
+78	devboard	1
+78	gas	1
+78	pulse	1
+79	appliance1	1
+79	electricity	1
+79	iam	1
+79	power	1
+80	Bastrop	1
+80	river flow	1
+81	Bastrop	1
+81	river level	1
+82	LDR	1
+82	light	1
+83	accesses	1
+84	light	1
+85	isopen	1
+86	light	1
+87		1
+88	successes	1
+89	failures	1
+90	hits	1
+90	hph	1
+91	counter	1
+92	LDR	1
+92	light dependent resistor	1
+92	light sensor	1
+93	latitude	1
+94	longitude	1
+95	altitude	1
+96		1
+97		1
+98		1
+99	speed	1
+100	air quality	1
+100	SO2	1
+101	air quality	1
+101	PM10	1
+102	air quality	1
+102	NO2	1
+103	air quality	1
+103	SO2	1
+104	air quality	1
+104	PM10	1
+105	air quality	1
+105	NO2	1
+106	air quality	1
+106	SO2	1
+107	air quality	1
+107	PM10	1
+108	air quality	1
+108	NO2	1
+109	air quality	1
+109	SO2	1
+110	air quality	1
+110	PM10	1
+111	air quality	1
+111	NO2	1
+112	air quality	1
+112	SO2	1
+113	air quality	1
+113	PM10	1
+114	air quality	1
+114	NO2	1
+115	air quality	1
+115	SO2	1
+116	air quality	1
+116	PM10	1
+117	air quality	1
+117	NO2	1
+118	air quality	1
+118	SO2	1
+119	air quality	1
+119	PM10	1
+120	air quality	1
+120	NO2	1
+121	air quality	1
+121	SO2	1
+122	air quality	1
+122	PM10	1
+123	air quality	1
+123	NO2	1
+124	air quality	1
+124	SO2	1
+125	air quality	1
+125	PM10	1
+126	air quality	1
+126	NO2	1
+127	air quality	1
+127	SO2	1
+128	air quality	1
+128	PM10	1
+129	air quality	1
+129	NO2	1
+130	air quality	1
+130	SO2	1
+131	air quality	1
+131	PM10	1
+132	air quality	1
+132	NO2	1
+133	air quality	1
+133	SO2	1
+134	air quality	1
+134	PM10	1
+135	air quality	1
+135	NO2	1
+136	air quality	1
+136	SO2	1
+137	air quality	1
+137	PM10	1
+138	air quality	1
+138	NO2	1
+139	air quality	1
+139	SO2	1
+140	air quality	1
+140	PM10	1
+141	air quality	1
+141	NO2	1
+142	air quality	1
+142	SO2	1
+143	air quality	1
+143	PM10	1
+144	air quality	1
+144	NO2	1
+145	air quality	1
+145	SO2	1
+146	air quality	1
+146	PM10	1
+147	air quality	1
+147	NO2	1
+148	currentcost	1
+149	degrees	1
+149	Wind Direction	1
+150	miles	1
+150	Visibility	1
+151	celsius	1
+151	temperature	1
+152	percent	1
+152	Relative Humidity	1
+153	hPa	1
+153	pressure altimeter	1
+154	degrees	1
+154	Wind Direction	1
+155	miles	1
+155	Visibility	1
+156	celsius	1
+156	temperature	1
+157	percent	1
+157	Relative Humidity	1
+158	hPa	1
+158	pressure altimeter	1
+159	degrees	1
+159	Wind Direction	1
+160	miles	1
+160	Visibility	1
+161	celsius	1
+161	temperature	1
+162	percent	1
+162	Relative Humidity	1
+163	hPa	1
+163	pressure altimeter	1
+164	degrees	1
+164	Wind Direction	1
+165	miles	1
+165	Visibility	1
+166	celsius	1
+166	temperature	1
+167	percent	1
+167	Relative Humidity	1
+168	hPa	1
+168	pressure altimeter	1
+169	degrees	1
+169	Wind Direction	1
+170	miles	1
+170	Visibility	1
+171	celsius	1
+171	temperature	1
+172	percent	1
+172	Relative Humidity	1
+173	hPa	1
+173	pressure altimeter	1
+174	degrees	1
+174	Wind Direction	1
+175	miles	1
+175	Visibility	1
+176	celsius	1
+176	temperature	1
+177	percent	1
+177	Relative Humidity	1
+178	hPa	1
+178	pressure altimeter	1
+179	humidity	1
+180	light level	1
+181	temperature	1
+182	door 1	1
+183	door 2	1
+184	failures	1
+185	successes	1
+186		1
+187		1
+188	celsius	1
+188	temperature	1
+189	humidity	1
+190	degree	1
+190	direction	1
+190	wind	1
+191	speed	1
+191	wind	1
+192	pressure	1
+192	Pressure	1
+193	precipitation	1
+194	logins	1
+194	users	1
+195	diskSpace	1
+195	storage	1
+196	memory	1
+197	feed	1
+197	hits	1
+197	rss	1
+198	average	1
+198	load	1
+199	http	1
+199	processes	1
+200	http	1
+200	memory	1
+201	mail	1
+201	processes	1
+202	mail	1
+202	memory	1
+203	misc	1
+203	processes	1
+204	memory	1
+204	misc	1
+205	Andreas	1
+205	CRUDEOIL	1
+205	K3	1
+205	myValue	1
+205	Number	1
+206	celsius	1
+206	temperature	1
+207	m/s	1
+207	Wind Speed	1
+208	humidity	1
+209	Pressure	1
+210	Visibility	1
+211	CRUDE OIL	1
+211	DOLLAR	1
+211	PRICE PER BARREL	1
+211	UNKNOWN	1
+212	DOLLAR	1
+213	PRICE PER BARREL	1
+214	UNKNOWN	1
+215	temperature	1
+216	windspeed	1
+216	Wind Speed	1
+217	humidity	1
+218	Pressure	1
+219	Visibility	1
+220	Lat	1
+221	Lon	1
+222	Magnitude	1
+223	Depth	1
+224	temperature	1
+225	Wind Speed	1
+226	humidity	1
+227	Pressure	1
+228	Visibility	1
+229	Country	1
+229	Europe	1
+229	K3	1
+229	Population	1
+229	Spain	1
+230	Country	1
+230	Europe	1
+230	K3	1
+230	Population	1
+230	UK	1
+231	Country	1
+231	Europe	1
+231	K3	1
+231	Population	1
+231	Turkey	1
+232	Country	1
+232	Europe	1
+232	Germany	1
+232	K3	1
+232	Population	1
+233	Jonas	1
+233	Nr	1
+233	Number	1
+234	temperature	1
+235	Wind Speed	1
+236	humidity	1
+237	Pressure	1
+238	Visibility	1
+239	Bravo	1
+239	IBHM-GPS	1
+239	K3	1
+239	Soldier	1
+240	carbondioxide	1
+240	co2	1
+240	controlvalve	1
+240	valvestate	1
+241	airhumidity	1
+241	flow	1
+241	heatingflow	1
+241	humidity	1
+241	interior	1
+241	rh	1
+242	celsius	1
+242	centigrade	1
+242	electricity	1
+242	temp	1
+242	temperature	1
+243	carbondioxide	1
+243	celsius	1
+243	centigrade	1
+243	co2	1
+243	temp	1
+243	temperature	1
+244	carbondioxide	1
+244	celsius	1
+244	centigrade	1
+244	co2	1
+244	temp	1
+244	temperature	1
+245	carbondioxide	1
+245	celsius	1
+245	centigrade	1
+245	co2	1
+245	temp	1
+245	temperature	1
+246	airhumidity	1
+246	celsius	1
+246	centigrade	1
+246	humidity	1
+246	interior	1
+246	rh	1
+246	rH	1
+246	temp	1
+246	temperature	1
+247	celsius	1
+247	centigrade	1
+247	interior	1
+247	temp	1
+247	temperature	1
+248	airhumidity	1
+248	celsius	1
+248	centigrade	1
+248	humidity	1
+248	interior	1
+248	rh	1
+248	rH	1
+248	temp	1
+248	temperature	1
+249	celsius	1
+249	centigrade	1
+249	interior	1
+249	temp	1
+249	temperature	1
+250	airhumidity	1
+250	celsius	1
+250	centigrade	1
+250	humidity	1
+250	interior	1
+250	rh	1
+250	rH	1
+250	temp	1
+250	temperature	1
+251	celsius	1
+251	centigrade	1
+251	interior	1
+251	temp	1
+251	temperature	1
+252	celsius	1
+252	centigrade	1
+252	controlvalve	1
+252	interior	1
+252	temperature	1
+252	valvestate	1
+253	airhumidity	1
+253	coldwater	1
+253	exterior	1
+253	humidity	1
+253	rh	1
+253	rH	1
+254	celsius	1
+254	centigrade	1
+254	exterior	1
+254	hotwater	1
+254	temperature	1
+255	coldwater	1
+255	rain	1
+255	rainsensor	1
+256	celsius	1
+256	centigrade	1
+256	hotwater	1
+256	temp	1
+256	temperature	1
+257	celsius	1
+257	centigrade	1
+257	meterspersecond	1
+257	mps	1
+257	temp	1
+257	temperature	1
+257	wind	1
+257	windspeed	1
+258	celsius	1
+258	centigrade	1
+258	orientation	1
+258	temp	1
+258	temperature	1
+258	vane	1
+258	windvane	1
+259	celsius	1
+259	centigrade	1
+259	temp	1
+259	temperature	1
+260	celsius	1
+260	centigrade	1
+260	temp	1
+260	temperature	1
+261	celsius	1
+261	centigrade	1
+261	temp	1
+261	temperature	1
+262	celsius	1
+262	centigrade	1
+262	temp	1
+262	temperature	1
+263	airhumidity	1
+263	flow	1
+263	heatingflow	1
+263	humidity	1
+263	interior	1
+263	rh	1
+264	celsius	1
+264	centigrade	1
+264	temp	1
+264	temperature	1
+265	celsius	1
+265	centigrade	1
+265	temp	1
+265	temperature	1
+266	celsius	1
+266	centigrade	1
+266	temp	1
+266	temperature	1
+267	coldwater	1
+268	hotwater	1
+269	coldwater	1
+270	hotwater	1
+271	meterspersecond	1
+271	mps	1
+271	wind	1
+271	windspeed	1
+272	orientation	1
+272	vane	1
+272	windvane	1
+273	celsius	1
+273	centigrade	1
+273	controlvalve	1
+273	interior	1
+273	temperature	1
+273	valvestate	1
+274	airhumidity	1
+274	flow	1
+274	heatingflow	1
+274	humidity	1
+274	interior	1
+274	rh	1
+275	celsius	1
+275	centigrade	1
+275	interior	1
+275	mainmeter	1
+275	temperature	1
+276	airhumidity	1
+276	blockameter	1
+276	exterior	1
+276	humidity	1
+276	rh	1
+277	blockbmeter	1
+277	celsius	1
+277	centigrade	1
+277	exterior	1
+277	temperature	1
+278	blockcmeter	1
+278	rain	1
+278	rainsensor	1
+279	load	1
+279	load level	1
+279	test reading	1
+280		1
+281	x_position	1
+282	y_position	1
+283	nearest avatar name	1
+284	x position of avatar	1
+285	y postion of avatar	1
+286	z position of avatar	1
+287	z_position	1
+288	last_avatar	1
+289	touch_count	1
+290	wind_x	1
+291	wind_y	1
+292	wind_z	1
+293	wind_magnitude	1
+294	distance to nearest avatar	1
+295		1
+296	electricity	1
+296	energy	1
+296	Energy	1
+296	power consumption	1
+297	mains frequency	1
+298	temperature	1
+299	LDR	1
+299	light level	1
+299	light sensor	1
+300		1
+301		1
+302		1
+303		1
+304	bell	1
+304	door	1
+304	doorbell	1
+304	rings	1
+305	electricity_total	1
+305	kWh	1
+306	consumption	1
+306	electricity	1
+306	kWh	1
+307	consumption	1
+307	Gas	1
+307	m3	1
+308	gas_total	1
+308	m3	1
+309	days	1
+309	server	1
+309	uptime	1
+310	lindogram	1
+310	mass	1
+311		1
+312		1
+313		1
+314		1
+315		1
+316		1
+317		1
+318		1
+319		1
+320		1
+321		1
+322		1
+323		1
+324		1
+325		1
+326		1
+327		1
+328		1
+329		1
+330		1
+331		1
+332		1
+333		1
+334		1
+335		1
+336		1
+337		1
+338		1
+339		1
+340		1
+341		1
+342		1
+343		1
+344		1
+345		1
+346		1
+347		1
+348		1
+349		1
+350		1
+351		1
+352		1
+353	temp	1
+354	humidity	1
+355	light	1
+356	WELLFLD1_WELL4_DRAWDOWN	1
+357	WELLFLD1_WELL6_DRAWDOWN	1
+358	WELLFLD2_WELL8_DRAWDOWN	1
+359	WELLFLD2_WELL9_DRAWDOWN	1
+360	WELLFLD1_WELL10_DRAWDOWN	1
+361	WELLFLD2_WELL11_DRAWDOWN	1
+362	temp	1
+363	humidity	1
+364	light	1
+365	temp	1
+366	humidity	1
+367	light	1
+368	temp	1
+369	humidity	1
+370	light	1
+371	CM22	1
+371	Global CM22 (vent.)	1
+372	CM6B	1
+372	Global CM6b	1
+373	Global SP Lite	1
+373	SPL	1
+374	Global SP-110	1
+374	SP110	1
+375	GH200-1	1
+375	Global LI-200	1
+376	ETR	1
+376	Global Extraterrestrial (calc.)	1
+377	GH780	1
+377	Global RG780 PSP (vent.)	1
+378	GCUV4	1
+378	Global UV-Total CUV4	1
+379	Global UV-Total TUVR	1
+379	GUV	1
+380	Global UVA UV-S-A-T	1
+380	UVSAT	1
+381	Global UVA CUVA1	1
+381	GUVA1	1
+382	Global UVB UV-S-B-T	1
+382	UVSBT	1
+383	CM3	1
+383	Global CM3 (CNR1)	1
+384	Global UVB CUVB1	1
+384	GUVB1	1
+385	Global UVB MS210W	1
+385	GUV210	1
+386	Global UVB UVB-1	1
+386	GUVB-1	1
+387	Global UVB 501A	1
+387	GUV501	1
+388	Global UVE 501A (Index)	1
+388	GUV501	1
+389	Global UVE 501A (MED)	1
+389	GUV501	1
+390	Global Quantum LI-190	1
+390	LI-190	1
+391	Global Photometric LI-210	1
+391	LI-210	1
+392	G40S	1
+392	Global 40-South PSP	1
+393	G40SLI	1
+393	Global 40-South LI-200	1
+394	GHV	1
+394	Global PSP (vent/therm-zen corr.)	1
+395	G90N	1
+395	Global 90-North PSP	1
+396	G90NLI	1
+396	Global 90-North LI-200	1
+397	G90E	1
+397	Global 90-East PSP	1
+398	G90ELI	1
+398	Global 90-East LI-200	1
+399	G90S	1
+399	Global 90-South PSP	1
+400	G90SLI	1
+400	Global 90-South LI-200	1
+401	G90W	1
+401	Global 90-West PSP	1
+402	G90WLI	1
+402	Global 90-West LI-200	1
+403	Global Normal CM-21	1
+403	GN21	1
+404	CH1	1
+404	Direct CH1	1
+405	GH	1
+405	Global PSP (thermal-zenith corr.)	1
+406	Direct NIP (unit 2)	1
+406	DN2	1
+407	Direct NIP (unit 1)	1
+407	DN	1
+408	Direct LI-201	1
+408	LI-201	1
+409	Direct Extraterrestrial (calc.)	1
+409	ETRN	1
+410	Direct RG780 NIP	1
+410	DN780	1
+411	Direct UV-Total (calc.)	1
+411	DUVT	1
+412	Direct UVA CUVA2	1
+412	DUVA2	1
+413	Direct UVB CUVB2	1
+413	DUVB2	1
+414	DH848	1
+414	Diffuse 8-48 (vent.)	1
+415	DHCM22	1
+415	Diffuse CM22 (vent.)	1
+416	GHV	1
+416	Global PSP (ventilated)	1
+417	DHSD	1
+417	Diffuse PSP (vent/thermal corr.)	1
+418	DHSD	1
+418	Diffuse PSP (vent.)	1
+419	DHSB	1
+419	Diffuse PSP (sdwband corr.)	1
+420	Diffuse SPN1	1
+420	SPN1	1
+421	DCUV4	1
+421	Diffuse UV-Total CUV4	1
+422	ZBR	1
+422	Zebra PSP	1
+423	Downwelling IR PIR (vent.)	1
+423	DWIR	1
+424	CG4	1
+424	Downwelling IR CG4 (vent.)	1
+425	CG3	1
+425	Downwelling IR CG3 (CNR1)	1
+426	Upwelling IR PIR	1
+426	UWIR	1
+427	GH	1
+427	Global PSP	1
+428	Upwelling IR CG3 (CNR1)	1
+428	UWCG3	1
+429	REF	1
+429	Upwelling Shortwave PSP	1
+430	REFCM3	1
+430	Upwelling Shwv CM3 (CNR1)	1
+431	REF200	1
+431	Upwelling Shortwave LI-200	1
+432	REF190	1
+432	Upwelling Quantum LI-190	1
+433	NET	1
+433	Net Infrared PIRs (atmos.)	1
+434	CG3	1
+434	Net Infrared CNR1 (atmos.)	1
+435	NET	1
+435	Net Radiation (Eppley)	1
+436	CNR1	1
+436	Net Radiation (CNR1)	1
+437	DWIR	1
+437	Instrument Net DW PIR	1
+438	Global TSP-700 (vent.)	1
+438	TSP-700	1
+439	CG4	1
+439	Instrument Net DW CG4	1
+440	CG3	1
+440	Instrument Net DW CG3	1
+441	Instrument Net UW PIR	1
+441	UWIR	1
+442	Instrument Net UW CG3	1
+442	UWCG3	1
+443	PH500	1
+443	Photometer TWC (500nm)	1
+444	Photometer POM-01 (315nm)	1
+444	POM01	1
+445	Photometer POM-01 (400nm)	1
+445	POM01	1
+446	Photometer POM-01 (500nm)	1
+446	POM01	1
+447	Photometer POM-01 (675nm)	1
+447	POM01	1
+448	Photometer POM-01 (870nm)	1
+448	POM01	1
+449	Global TSP-1	1
+449	TSP-1	1
+450	Photometer POM-01 (940nm)	1
+450	POM01	1
+451	Photometer POM-01 (1020nm)	1
+451	POM01	1
+452	ZEN	1
+452	Zenith Angle	1
+453	Azimuth Angle	1
+453	AZM	1
+454	Airmass	1
+454	AMASS	1
+455	Dry Bulb Temp (Tower)	1
+455	R45	1
+456	D45	1
+456	Dry Bulb Temp (Deck)	1
+457	Dry Bulb Temp (PV)	1
+457	T45	1
+458	Dry Bulb Temp (Data lab)	1
+458	L45	1
+459	R45	1
+459	Wet Bulb Temp (Tower)	1
+460	Global SPN1	1
+460	SPN1	1
+461	Dew Point Temp (Tower)	1
+461	R45	1
+462	R45	1
+462	Wind Chill Temp (Tower)	1
+463	D45	1
+463	Wind Chill Temp (Deck)	1
+464	R45	1
+464	Relative Humidity (Tower)	1
+465	D45	1
+465	Relative Humidity (Deck)	1
+466	Relative Humidity (PV)	1
+466	T45	1
+467	L45	1
+467	Relative Humidity (Data lab)	1
+468	Cloud Cover (Total)	1
+468	TSI	1
+469	Cloud Cover (Opaque)	1
+469	TSI	1
+470	RRMY	1
+470	Wind Speed (6')	1
+470	Wind Speed (6)	1
+471	GH	1
+471	Global PSP	1
+472	GH	1
+472	Global (Accumulated)	1
+473	Est. Sea-Level Pressure	1
+473	SEA	1
+474	Precipitation (Accumulated)	1
+474	RAIN	1
+475	Atmospheric Electric Field	1
+475	EF	1
+475	Wind Speed (2m)	1
+475	WS	1
+476	Wind Speed (2m)	1
+476	Wind Speed (5m)	1
+476	WS	1
+477	Wind Speed (10m)	1
+477	Wind Speed (5m)	1
+477	WS	1
+478	Wind Speed (10m)	1
+478	Wind Speed (20m)	1
+478	WS	1
+479	Wind Speed (20m)	1
+479	Wind Speed (50m)	1
+479	WS	1
+480	Wind Speed (50m)	1
+480	Wind Speed (80m)	1
+480	WS	1
+481	Pk Wind Speed (2m)	1
+481	Wind Speed (80m)	1
+481	WS	1
+482	Pk Wind Speed (2m)	1
+482	Pk Wind Speed (5m)	1
+482	WS	1
+483	T	1
+483	Temperature (2m)	1
+484	Pk Wind Speed (10m)	1
+484	Pk Wind Speed (5m)	1
+484	WS	1
+485	Pk Wind Speed (10m)	1
+485	Pk Wind Speed (20m)	1
+485	WS	1
+486	Pk Wind Speed (20m)	1
+486	Pk Wind Speed (50m)	1
+486	WS	1
+487	Pk Wind Speed (50m)	1
+487	Pk Wind Speed (80m)	1
+487	WS	1
+488	Pk Wind Speed (80m)	1
+488	SDev Wind Speed (2m)	1
+488	WS	1
+489	SDev Wind Speed (2m)	1
+489	SDev Wind Speed (5m)	1
+489	WS	1
+490	SDev Wind Speed (10m)	1
+490	SDev Wind Speed (5m)	1
+490	WS	1
+491	SDev Wind Speed (10m)	1
+491	SDev Wind Speed (20m)	1
+491	WS	1
+492	SDev Wind Speed (20m)	1
+492	SDev Wind Speed (50m)	1
+492	WS	1
+493	SDev Wind Speed (50m)	1
+493	SDev Wind Speed (80m)	1
+493	WS	1
+494	T	1
+494	Temperature (50m)	1
+495	SDev Wind Speed (80m)	1
+495	WD	1
+495	Wind Direction (2m)	1
+495	WS	1
+496	WD	1
+496	Wind Direction (2m)	1
+496	Wind Direction (5m)	1
+497	WD	1
+497	Wind Direction (10m)	1
+497	Wind Direction (5m)	1

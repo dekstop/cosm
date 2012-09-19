@@ -2,6 +2,8 @@
 - extract location elevation ("ele") and waypoints
 - extract environment website
 
+- sequence analyses
+
 - write a tool that fills in missing metadata (tags, units) for "blank"/renamed streams 
 
   1. identify env/stream IDs
@@ -22,4 +24,10 @@
 
   3. find XML, parse, update
 
-- sequence analyses
+- query performance optimisation: postgres table partitions
+  - http://www.postgresql.org/docs/9.1/static/ddl-partitioning.html
+  - set up inheriting tables for each month of data 
+    - with check constraints on "updated"
+    - with index on "updated"
+    - use the same sequence for all child tables http://www.neilconway.org/docs/sequences/
+  - set up an insert trigger on master table that re-routes inserts based on "updated"
